@@ -28,7 +28,7 @@ const addressSchema = new mongoose.Schema({
 });
 
 const AddressModel =
-  mongoose.models.AddressTwoGreat ||
-  mongoose.model("AddressTwoGreat", addressSchema);
+  mongoose.models.AddressEric ||
+  mongoose.model("AddressEric", addressSchema);
 
 export default AddressModel;

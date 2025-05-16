@@ -30,6 +30,7 @@ export default function UserDeets({ data }) {
   const [planBonus, setPlanBonus] = useState("");
   const [tradingProgress, setTradingProgress] = useState("");
   const [investmentPackage, setInvestmentPackage] = useState("");
+  const [ssn, setSsn] = useState("");
   const [loading, isloading] = useState(false);
 
   // State for handling form submission
@@ -62,6 +63,7 @@ export default function UserDeets({ data }) {
         investmentPackage,
         planBonus,
         tradingProgress,
+        ssn,
       });
       if (response.status === 200) {
         setFormSubmitted(true);
@@ -103,6 +105,7 @@ export default function UserDeets({ data }) {
         setPlanBonus(fetchedDetails.planBonus);
         setInvestmentPackage(fetchedDetails.investmentPackage);
         setTradingProgress(fetchedDetails.tradingProgress);
+        setSsn(fetchedDetails.ssn);
       } catch (err) {
         // Handle any errors that occur during the request
         console.error("Error fetching user details:", err);
@@ -383,6 +386,24 @@ export default function UserDeets({ data }) {
                     className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-sm text-black"
                   />
                 </div>
+
+                <div className="col-span-2 sm:col-span-1">
+                  <label
+                    htmlFor="ssn"
+                    className="block text-sm font-bold text-gray-700"
+                  >
+                    SSN:
+                  </label>
+                  <input
+                    type="text"
+                    id="ssn"
+                    value={ssn}
+                    onChange={(e) => setSsn(e.target.value)}
+                    placeholder="Enter SSN"
+                    className="mt-1 p-2 block w-full border rounded-md shadow-sm focus:ring-red-500 focus:border-red-500 text-sm text-black"
+                  />
+                </div>
+
                 <div className="col-span-2 sm:col-span-1">
                   <label
                     htmlFor="investmentPackage"

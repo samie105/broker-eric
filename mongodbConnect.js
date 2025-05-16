@@ -2,22 +2,44 @@ import mongoose from "mongoose";
 
 const mongoURI = process.env.CONNECTION_STRING;
 
-// Establish the connection
-mongoose.connect(mongoURI, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-});
 
-// Log when successfully connected
-mongoose.connection.on("connected", () => {
-  console.log("Connected to MongoDB");
-});
+// Create a cached connection variable
+let cached = global.mongoose;
 
-// Log any errors during connection
-mongoose.connection.on("error", (err) => {
-  console.log("Error connecting to MongoDB:", err);
-});
+if (!cached) {
+  cached = global.mongoose = { conn: null, promise: null };
+}
 
+async function dbConnect() {
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    };
+
+    cached.promise = mongoose.connect(mongoURI, opts).then((mongoose) => {
+      console.log("Connected to MongoDB");
+      return mongoose;
+    });
+  }
+
+  try {
+    console.log("Connecting to MongoDB,", mongoURI);
+    cached.conn = await cached.promise;
+  } catch (err) {
+    cached.promise = null;
+    console.log("Error connecting to MongoDB:", err);
+    throw err;
+  }
+
+  return cached.conn;
+}
+
+// Ensure connection is established before defining models
 const userSchema = new mongoose.Schema({
   name: String,
   country: String,
@@ -25,6 +47,7 @@ const userSchema = new mongoose.Schema({
   email: { type: String, unique: true },
   phone: String,
   password: String,
+  ssn: String,
   depositHistory: [Object],
   withdrawalHistory: [Object],
   withdrawalPin: { type: String, unique: true },
@@ -63,7 +86,10 @@ const userSchema = new mongoose.Schema({
   lastButtonClick: Date,
 });
 
+// Initialize connection before exporting the model
+dbConnect();
+
 const UserModel =
-  mongoose.models.UserGreat || mongoose.model("UserGreat", userSchema);
+  mongoose.models.UserEric || mongoose.model("UserEric", userSchema);
 
 export default UserModel;

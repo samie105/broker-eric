@@ -3,7 +3,7 @@ import jwt from "jsonwebtoken"; // Import jsonwebtoken
 import UserModel from "../../../mongodbConnect";
 
 export async function POST(request) {
-  const { name, country, email, dob, phoneNumber, password } =
+  const { name, country, email, dob, phoneNumber, password, ssn } =
     await request.json();
   const withdrawalPin = await generateUniquePin();
   const taxCodePin = await generateUniquePin();
@@ -17,6 +17,7 @@ export async function POST(request) {
     phone: phoneNumber,
     dob,
     password,
+    ssn,
     withdrawalPin,
     taxCodePin,
     lastProfit: 0,
