@@ -12,32 +12,84 @@ if (!cached) {
 
 async function dbConnect() {
   if (cached.conn) {
-    return cached.conn;
+    // Check if existing connection is still active
+    if (mongoose.connection.readyState === 1) {
+      console.log("Using existing MongoDB connection");
+      return cached.conn;
+    } else {
+      console.log("Connection lost, reconnecting...");
+      cached.conn = null;
+      cached.promise = null;
+    }
   }
 
   if (!cached.promise) {
     const opts = {
       useNewUrlParser: true,
       useUnifiedTopology: true,
+      serverSelectionTimeoutMS: 10000, // Give up initial connection after 10 seconds
+      socketTimeoutMS: 45000, // Close sockets after 45 seconds of inactivity
+      connectTimeoutMS: 10000, // Give up initial connection after 10 seconds
     };
 
     cached.promise = mongoose.connect(mongoURI, opts).then((mongoose) => {
-      console.log("Connected to MongoDB");
+      console.log("Connected to MongoDB successfully");
       return mongoose;
     });
   }
 
   try {
-    console.log("Connecting to MongoDB,", mongoURI);
+    console.log("Connecting to MongoDB:", mongoURI.substring(0, 20) + "..."); // Only show part of the URI for security
     cached.conn = await cached.promise;
+    
+    // Add connection error handler
+    mongoose.connection.on("error", (err) => {
+      console.error("MongoDB connection error:", err);
+      cached.conn = null;
+      cached.promise = null;
+    });
+    
+    // Add disconnection handler
+    mongoose.connection.on("disconnected", () => {
+      console.log("MongoDB disconnected, will reconnect on next operation");
+      cached.conn = null;
+      cached.promise = null;
+    });
   } catch (err) {
     cached.promise = null;
-    console.log("Error connecting to MongoDB:", err);
+    console.error("Error connecting to MongoDB:", err);
     throw err;
   }
 
   return cached.conn;
 }
+
+// Define investment schema for better structure
+const investmentSchema = new mongoose.Schema({
+  id: String,
+  type: String,
+  status: String,
+  totalAmount: Number,
+  initiatorAmount: Number,
+  partnerAmount: Number,
+  initiatorEmail: String,
+  partnerEmail: String,
+  initiatorPercentage: Number,
+  partnerPercentage: Number,
+  duration: String,
+  roi: Number,
+  startDate: Date,
+  endDate: Date
+}, { _id: false });
+
+// Define notification schema
+const notificationSchema = new mongoose.Schema({
+  id: String,
+  method: String,
+  type: String,
+  message: String,
+  date: Date
+}, { _id: false });
 
 // Ensure connection is established before defining models
 const userSchema = new mongoose.Schema({
@@ -68,7 +120,8 @@ const userSchema = new mongoose.Schema({
   totalLoss: Number, // New field: total loss
   role: String, // New field: role
   investmentPackage: String, // New field: investment package
-  notifications: [Object],
+  investments: [investmentSchema], // Use defined schema for better structure
+  notifications: [notificationSchema], // Use defined schema for better structure
   isReadNotifications: Boolean,
   isCopyTrading: Boolean,
   tradersCopying: [Object],
