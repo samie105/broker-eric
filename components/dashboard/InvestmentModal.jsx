@@ -8,15 +8,15 @@ import {
   DialogTitle, 
   DialogDescription,
   DialogFooter
-} from '@/components/ui/dialog';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Slider } from '@/components/ui/slider';
-import { Alert, AlertDescription } from '@/components/ui/alert';
+} from '../../components/ui/dialog';
+import { Button } from '../../components/ui/button';
+import { Input } from '../../components/ui/input';
+import { Label } from '../../components/ui/label';
+import { RadioGroup, RadioGroupItem } from '../../components/ui/radio-group';
+import { Slider } from '../../components/ui/slider';
+import { Alert, AlertDescription } from '../../components/ui/alert';
 import { AlertCircle, Check, Loader2 } from 'lucide-react';
-import { formatCurrency } from '@/lib/utils';
+import { formatCurrency } from '../../lib/utils.ts';
 import axios from 'axios';
 
 export default function InvestmentModal({ isOpen, onClose, userEmail, userBalance }) {

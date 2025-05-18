@@ -1,14 +1,14 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useUserData } from '@/contexts/userrContext';
-import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import InvestmentModal from '@/components/dashboard/InvestmentModal';
-import InvestmentRequests from '@/components/dashboard/investment/InvestmentRequests';
-import { formatCurrency } from '@/lib/utils';
+import { useUserData } from '../../../contexts/userrContext';
+import { Button } from '../../../components/ui/button';
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '../../../components/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '../../../components/ui/tabs';
+import { Badge } from '../../../components/ui/badge';
+import InvestmentModal from '../../../components/dashboard/InvestmentModal';
+import InvestmentRequests from '../../../components/dashboard/investment/InvestmentRequests';
+import { formatCurrency } from '../../../lib/utils.ts';
 import { Loader2, TrendingUp, Users, Clock } from 'lucide-react';
 
 export default function InvestmentsPage() {
