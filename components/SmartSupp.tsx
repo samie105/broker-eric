@@ -1,5 +1,6 @@
 "use client";
 
+import Script from "next/script";
 import { useEffect } from "react";
 
 declare global {
@@ -31,5 +32,6 @@ export default function SmartSupp() {
   //   };
   // }, []);
 
-  return null;
+  return <> <Script src="//code.jivosite.com/widget/txlKTXRP4m" strategy="afterInteractive"></Script>
+</>;
 }
