@@ -14,7 +14,7 @@ const sendEmail = async (email, subject, message) => {
   });
 
   const mailOptions = {
-    from: "Capital Nexus <support@capitalnexus.site>",
+    from: "Capital Nexus <support@thekapitalnexus.com>",
     to: email,
     subject: subject,
     text: message,

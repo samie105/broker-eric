@@ -84,7 +84,7 @@ export default function Support() {
                 Email
               </div>
               <div className="cta">
-                <Link href="mailto:support@capitalnexus.site" passHref>
+                <Link href="mailto:support@thekapitalnexus.com" passHref>
                   <button className="flex items-center gap-3 justify-center rounded-md w-full py-3 px-3 font-bold text-white  text-sm bg-[#F54336]">
                     <div>Send Email</div>
                     <svg
