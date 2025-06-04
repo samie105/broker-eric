@@ -8,7 +8,7 @@ export default function Footer() {
   return (
     <>
       <div className="footer-container bg-[#0a0a0a] p-5  text-white">
-        <div className="grid-system grid gap-x-5 grid-cols-1 md:grid-cols-2  lg:grid-cols-3 ">
+        <div className="grid-system grid gap-x-5 grid-cols-1 md:grid-cols-2  lg:grid-cols-4 ">
           <div className="grid1 my-10">
             <section className="broker-name text-3xl my-4">
               <svg
@@ -113,6 +113,75 @@ export default function Footer() {
             </Link>
           </div>
           <div className="grid3">
+            <h2 className="text-xl my-4">
+              <div className="flex items-center">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="currentColor"
+                  className="w-5 h-5 mr-2"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M5.625 1.5c-1.036 0-1.875.84-1.875 1.875v17.25c0 1.035.84 1.875 1.875 1.875h12.75c1.035 0 1.875-.84 1.875-1.875V12.75A3.75 3.75 0 0016.5 9h-1.875a1.875 1.875 0 01-1.875-1.875V5.25A3.75 3.75 0 009 1.5H5.625z"
+                    clipRule="evenodd"
+                  />
+                  <path d="M12.971 1.816A5.23 5.23 0 0114.25 5.25v1.875c0 .207.168.375.375.375H16.5a5.23 5.23 0 013.434 1.279 9.768 9.768 0 00-6.963-6.963z" />
+                </svg>
+                <p>Legal Information</p>
+              </div>
+            </h2>
+            <div className="links focus:outline-none focus:bg-none grid-cols-1 grid text-white/60 mx-2 transition-all cursor-pointer">
+              <Link href="/terms" passHref>
+                <div className="flex hover:text-white items-center my-2">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                    fill="currentColor"
+                    className="w-4 h-4 mr-2 text-white"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <p className="text-sm capitalize">Terms and Conditions</p>
+                </div>
+              </Link>
+              <div className="flex hover:text-white items-center my-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-4 h-4 mr-2 text-white"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <p className="text-sm capitalize">Privacy Policy</p>
+              </div>
+              <div className="flex hover:text-white items-center my-2">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 20 20"
+                  fill="currentColor"
+                  className="w-4 h-4 mr-2 text-white"
+                >
+                  <path
+                    fillRule="evenodd"
+                    d="M7.21 14.77a.75.75 0 01.02-1.06L11.168 10 7.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 01-1.06-.02z"
+                    clipRule="evenodd"
+                  />
+                </svg>
+                <p className="text-sm capitalize">Compliance</p>
+              </div>
+            </div>
+          </div>
+          <div className="grid4">
             <h2 className="text-xl my-9">
               <div className="flex items-center">
                 <svg
