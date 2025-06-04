@@ -428,7 +428,7 @@ export default function TermsAndConditions() {
         </h1>
         
         <p className="text-sm italic mb-8">
-          Note: These terms reflect Capital Nexus' compliance with U.S. crypto laws (e.g., SEC, IRS, FinCEN), global regulations (e.g., FATF), 
+          Note: These terms reflect Capital {"Nexus'"} compliance with U.S. crypto laws (e.g., SEC, IRS, FinCEN), global regulations (e.g., FATF), 
           and internal policies designed to protect investor assets, ensure transparent yield programs, and prevent legal and operational risks.
         </p>
         
