@@ -506,7 +506,7 @@ export default function TermsAndConditions() {
           </h1>
           
           <p className={`text-sm md:text-base italic ${isDarkMode ? "text-gray-400" : "text-gray-600"} max-w-3xl`}>
-            These terms reflect Capital Nexus' compliance with U.S. crypto laws (e.g., SEC, IRS, FinCEN), global regulations (e.g., FATF), 
+            These terms reflect Capital {"Nexus'"} compliance with U.S. crypto laws (e.g., SEC, IRS, FinCEN), global regulations (e.g., FATF), 
             and internal policies designed to protect investor assets, ensure transparent yield programs, and prevent legal and operational risks.
           </p>
         </div>
