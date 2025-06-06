@@ -195,7 +195,7 @@ export default function CreateStakePage() {
         </Link>
       </div>
 
-      <div className="rounded-lg p-6 bg-white border border-gray-200 shadow-sm">
+      <div className="rounded-lg p-6 bg-white border border-gray-200 shadow-sm max-h-[80vh] overflow-auto">
         <form onSubmit={handleSubmit}>
           <div className="space-y-6">
             <div>
@@ -321,7 +321,7 @@ export default function CreateStakePage() {
                             durations: [...stakeData.durations, { months: preset.months, percentage: 5 }]
                           });
                         } else {
-                          toast.info(`${preset.label} duration already exists`);
+                          toast.success(`${preset.label} duration already exists`);
                         }
                       }}
                     >

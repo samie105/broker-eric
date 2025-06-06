@@ -369,7 +369,7 @@ export default function StakingOptionsPage() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[600px] bg-white text-black">
+        <DialogContent className="sm:max-w-[600px] bg-white text-black max-h-[90vh] overflow-auto">
           <DialogHeader>
             <DialogTitle>Edit Staking Option</DialogTitle>
             <DialogDescription>
@@ -458,7 +458,7 @@ export default function StakingOptionsPage() {
                               durations: [...editForm.durations, { months: preset.months, percentage: 5 }]
                             });
                           } else {
-                            toast.info(`${preset.label} duration already exists`);
+                            toast.success(`${preset.label} duration already exists`);
                           }
                         }}
                       >
