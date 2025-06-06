@@ -1,79 +1,8 @@
 "use client";
 import { useTheme } from "../../contexts/themeContext";
-import Link from "next/link";
 
 export default function TermsAndConditions() {
   const { isDarkMode } = useTheme();
-
-  // Organize terms by categories for better visual structure
-  const categories = [
-    {
-      name: "Account & Eligibility",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-          <path fillRule="evenodd" d="M7.5 6a4.5 4.5 0 119 0 4.5 4.5 0 01-9 0zM3.751 20.105a8.25 8.25 0 0116.498 0 .75.75 0 01-.437.695A18.683 18.683 0 0112 22.5c-2.786 0-5.433-.608-7.812-1.7a.75.75 0 01-.437-.695z" clipRule="evenodd" />
-        </svg>
-      ),
-      terms: [1, 23, 24, 38, 51, 80, 85, 98]
-    },
-    {
-      name: "Regulatory Compliance",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-          <path fillRule="evenodd" d="M12.516 2.17a.75.75 0 00-1.032 0 11.209 11.209 0 01-7.877 3.08.75.75 0 00-.722.515A12.74 12.74 0 002.25 9.75c0 5.942 4.064 10.933 9.563 12.348a.75.75 0 00.374 0c5.499-1.415 9.563-6.406 9.563-12.348 0-1.39-.223-2.73-.635-3.985a.75.75 0 00-.722-.516l-.143.001c-2.996 0-5.717-1.17-7.734-3.08zm3.094 8.016a.75.75 0 10-1.22-.872l-3.236 4.53L9.53 12.22a.75.75 0 00-1.06 1.06l2.25 2.25a.75.75 0 001.14-.094l3.75-5.25z" clipRule="evenodd" />
-        </svg>
-      ),
-      terms: [2, 5, 6, 19, 20, 21, 69, 70, 92, 101]
-    },
-    {
-      name: "Investments & Staking",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-          <path d="M10.464 8.746c.227-.18.497-.311.786-.394v2.795a2.252 2.252 0 01-.786-.393c-.394-.313-.546-.681-.546-1.004 0-.323.152-.691.546-1.004zM12.75 15.662v-2.824c.347.085.664.228.921.421.427.32.579.686.579.991 0 .305-.152.671-.579.991a2.534 2.534 0 01-.921.42z" />
-          <path fillRule="evenodd" d="M12 2.25c-5.385 0-9.75 4.365-9.75 9.75s4.365 9.75 9.75 9.75 9.75-4.365 9.75-9.75S17.385 2.25 12 2.25zM12.75 6a.75.75 0 00-1.5 0v.816a3.836 3.836 0 00-1.72.756c-.712.566-1.112 1.35-1.112 2.178 0 .829.4 1.612 1.113 2.178.502.4 1.102.647 1.719.756v2.978a2.536 2.536 0 01-.921-.421l-.879-.66a.75.75 0 00-.9 1.2l.879.66c.533.4 1.169.645 1.821.75V18a.75.75 0 001.5 0v-.81a3.833 3.833 0 001.719-.756c.712-.566 1.112-1.35 1.112-2.178 0-.829-.4-1.612-1.113-2.178a3.833 3.833 0 00-1.718-.756V8.334c.597.1 1.129.402 1.559.865a.75.75 0 001.142-.972A4.858 4.858 0 0012.75 6.819V6z" clipRule="evenodd" />
-        </svg>
-      ),
-      terms: [3, 4, 12, 13, 14, 15, 16, 17, 33, 43, 47, 54, 58, 59, 60, 61, 67, 90]
-    },
-    {
-      name: "Security & Data Privacy",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-          <path fillRule="evenodd" d="M12 1.5a5.25 5.25 0 00-5.25 5.25v3a3 3 0 00-3 3v6.75a3 3 0 003 3h10.5a3 3 0 003-3v-6.75a3 3 0 00-3-3v-3c0-2.9-2.35-5.25-5.25-5.25zm3.75 8.25v-3a3.75 3.75 0 10-7.5 0v3h7.5z" clipRule="evenodd" />
-        </svg>
-      ),
-      terms: [10, 35, 41, 44, 75, 82, 84, 96]
-    },
-    {
-      name: "Withdrawals & Transactions",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-          <path d="M12 7.5a2.25 2.25 0 100 4.5 2.25 2.25 0 000-4.5z" />
-          <path fillRule="evenodd" d="M1.5 4.875C1.5 3.839 2.34 3 3.375 3h17.25c1.035 0 1.875.84 1.875 1.875v9.75c0 1.036-.84 1.875-1.875 1.875H3.375A1.875 1.875 0 011.5 14.625v-9.75zM8.25 9.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM18.75 9a.75.75 0 00-.75.75v.008c0 .414.336.75.75.75h.008a.75.75 0 00.75-.75V9.75a.75.75 0 00-.75-.75h-.008zM4.5 9.75A.75.75 0 015.25 9h.008a.75.75 0 01.75.75v.008a.75.75 0 01-.75.75H5.25a.75.75 0 01-.75-.75V9.75z" clipRule="evenodd" />
-          <path d="M2.25 18a.75.75 0 000 1.5c5.4 0 10.63.722 15.6 2.075 1.19.324 2.4-.558 2.4-1.82V18.75a.75.75 0 00-.75-.75H2.25z" />
-        </svg>
-      ),
-      terms: [7, 8, 11, 18, 26, 34, 36, 49, 62, 68, 89]
-    },
-    {
-      name: "Risk & Liability",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-          <path fillRule="evenodd" d="M9.401 3.003c1.155-2 4.043-2 5.197 0l7.355 12.748c1.154 2-.29 4.5-2.599 4.5H4.645c-2.309 0-3.752-2.5-2.598-4.5L9.4 3.003zM12 8.25a.75.75 0 01.75.75v3.75a.75.75 0 01-1.5 0V9a.75.75 0 01.75-.75zm0 8.25a.75.75 0 100-1.5.75.75 0 000 1.5z" clipRule="evenodd" />
-        </svg>
-      ),
-      terms: [32, 50, 52, 56, 57, 63, 91, 100]
-    },
-    {
-      name: "Other Terms",
-      icon: (
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" className="w-6 h-6">
-          <path fillRule="evenodd" d="M4.125 3C3.089 3 2.25 3.84 2.25 4.875V18a3 3 0 003 3h15a3 3 0 01-3-3V4.875C17.25 3.839 16.41 3 15.375 3H4.125zM12 9.75a.75.75 0 000 1.5h1.5a.75.75 0 000-1.5H12zm-.75-2.25a.75.75 0 01.75-.75h1.5a.75.75 0 010 1.5H12a.75.75 0 01-.75-.75zM6 12.75a.75.75 0 000 1.5h7.5a.75.75 0 000-1.5H6zm-.75 3.75a.75.75 0 01.75-.75h7.5a.75.75 0 010 1.5H6a.75.75 0 01-.75-.75zM6 6.75a.75.75 0 000 1.5h3a.75.75 0 000-1.5H6z" clipRule="evenodd" />
-        </svg>
-      ),
-      terms: [9, 22, 25, 27, 28, 29, 30, 31, 37, 39, 40, 42, 45, 46, 48, 53, 55, 64, 65, 66, 71, 72, 73, 74, 76, 77, 78, 79, 81, 83, 86, 87, 88, 93, 94, 95, 97, 99]
-    },
-  ];
 
   const terms = [
     {
@@ -491,108 +420,38 @@ export default function TermsAndConditions() {
   // Combine all terms
   const allTerms = [...terms, ...remainingTerms];
 
-  // Function to find a term by number
-  const findTerm = (number) => {
-    return allTerms.find((term, index) => index + 1 === number);
-  };
-
   return (
-    <div className={`min-h-screen pb-16 ${isDarkMode ? "bg-[#090909] text-gray-200" : "bg-white text-gray-800"}`}>
-      {/* Hero section */}
-      <div className={`py-16 ${isDarkMode ? "bg-[#111]" : "bg-blue-50"}`}>
-        <div className="max-w-5xl mx-auto px-4 md:px-8">
-          <h1 className={`text-3xl md:text-4xl font-bold mb-4 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-            CAPITAL NEXUS – Terms and Conditions
-          </h1>
-          
-          <p className={`text-sm md:text-base italic ${isDarkMode ? "text-gray-400" : "text-gray-600"} max-w-3xl`}>
-            These terms reflect Capital {"Nexus'"} compliance with U.S. crypto laws (e.g., SEC, IRS, FinCEN), global regulations (e.g., FATF), 
-            and internal policies designed to protect investor assets, ensure transparent yield programs, and prevent legal and operational risks.
-          </p>
-        </div>
-      </div>
-
-      {/* Table of contents */}
-      <div className="max-w-5xl mx-auto px-4 md:px-8 py-8">
-        <div className={`p-6 rounded-lg mb-8 ${isDarkMode ? "bg-[#111] border border-white/10" : "bg-gray-50 border border-gray-200"}`}>
-          <h2 className={`text-xl font-bold mb-4 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-            Table of Contents
-          </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {categories.map((category, index) => (
-              <Link key={index} href={`#${category.name.toLowerCase().replace(/\s+/g, '-')}`}>
-                <div className={`flex items-center p-3 rounded-md transition-colors ${isDarkMode ? "hover:bg-[#1a1a1a]" : "hover:bg-gray-100"}`}>
-                  <div className={`mr-3 ${isDarkMode ? "text-blue-400" : "text-blue-600"}`}>
-                    {category.icon}
-                  </div>
-                  <span className="font-medium">{category.name}</span>
-                </div>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        {/* Categories and terms */}
-        {categories.map((category, categoryIndex) => (
-          <div 
-            key={categoryIndex} 
-            id={category.name.toLowerCase().replace(/\s+/g, '-')} 
-            className="mb-12 scroll-mt-24"
-          >
-            <div className={`flex items-center gap-3 mb-6 pb-2 border-b ${isDarkMode ? "border-gray-700" : "border-gray-200"}`}>
-              <div className={`${isDarkMode ? "text-blue-400" : "text-blue-600"}`}>
-                {category.icon}
-              </div>
-              <h2 className={`text-2xl font-bold ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-                {category.name}
-              </h2>
-            </div>
-            
-            <div className="space-y-4">
-              {category.terms.map((termNumber, index) => {
-                const term = findTerm(termNumber);
-                if (!term) return null;
-                
-                return (
-                  <div 
-                    key={index}
-                    className={`p-5 rounded-lg transition-all hover:shadow-md ${
-                      isDarkMode 
-                        ? "bg-[#111] border border-white/10 hover:border-blue-500/30" 
-                        : "bg-gray-50 border border-gray-200 hover:border-blue-500/30"
-                    }`}
-                  >
-                    <h3 className={`font-bold mb-3 text-lg ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>
-                      {term.title}
-                    </h3>
-                    <p className={`${isDarkMode ? "text-gray-300" : "text-gray-700"}`}>
-                      {term.content}
-                    </p>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        ))}
+    <div className={`min-h-screen py-8 px-4 md:px-8 lg:px-16 ${isDarkMode ? "bg-[#090909] text-gray-200" : "bg-white text-gray-800"}`}>
+      <div className="max-w-4xl mx-auto">
+        <h1 className={`text-2xl md:text-3xl font-bold mb-8 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
+          CAPITAL NEXUS – Terms and Conditions
+        </h1>
         
-        {/* Footer */}
-        <div className={`mt-16 p-6 rounded-lg ${isDarkMode ? "bg-[#111] border border-white/10" : "bg-gray-50 border border-gray-200"}`}>
-          <div className="text-center">
-            <p className={`font-medium mb-3 ${isDarkMode ? "text-white" : "text-gray-900"}`}>
-              These 101 terms serve as the comprehensive legal and operational framework for all users of Capital Nexus investment services.
-            </p>
-            <p className={`${isDarkMode ? "text-gray-400" : "text-gray-600"}`}>
-              For questions or legal clarification, clients should contact Capital Nexus Support via our verified channels.
-            </p>
-            <div className="mt-6 flex justify-center space-x-4">
-              <Link href="/" className={`px-4 py-2 rounded-md ${isDarkMode ? "bg-[#0052FF] text-white" : "bg-blue-600 text-white"} hover:opacity-90 transition-opacity`}>
-                Return to Home
-              </Link>
-              <Link href="/auth" className={`px-4 py-2 rounded-md ${isDarkMode ? "bg-[#222] text-white/90" : "bg-gray-200 text-gray-800"} hover:opacity-90 transition-opacity`}>
-                Create Account
-              </Link>
+        <p className="text-sm italic mb-8">
+          Note: These terms reflect Capital {"Nexus'"} compliance with U.S. crypto laws (e.g., SEC, IRS, FinCEN), global regulations (e.g., FATF), 
+          and internal policies designed to protect investor assets, ensure transparent yield programs, and prevent legal and operational risks.
+        </p>
+        
+        <div className="space-y-6">
+          {allTerms.map((term, index) => (
+            <div key={index} className={`p-4 rounded-lg ${isDarkMode ? "bg-[#111] border border-white/10" : "bg-gray-50 border border-gray-200"}`}>
+              <h3 className={`font-bold mb-2 ${isDarkMode ? "text-blue-400" : "text-blue-700"}`}>
+                {term.title}
+              </h3>
+              <p className="text-sm">
+                {term.content}
+              </p>
             </div>
-          </div>
+          ))}
+        </div>
+        
+        <div className="mt-8 text-center text-sm">
+          <p>
+            These 101 terms serve as the comprehensive legal and operational framework for all users of Capital Nexus investment services.
+          </p>
+          <p className="mt-2">
+            For questions or legal clarification, clients should contact Capital Nexus Support via our verified channels.
+          </p>
         </div>
       </div>
     </div>

@@ -37,6 +37,7 @@ export default function StakingHeader() {
               Crypto
             </div>
           </Link>
+          {/* Stock tab commented out - currently only using crypto
           <Link href="/dashboard/stake/stock" passHref>
             {" "}
             <div
@@ -54,6 +55,8 @@ export default function StakingHeader() {
               Stock
             </div>
           </Link>
+          */}
+          {/* Currencies tab commented out - currently only using crypto
           <Link href="/dashboard/stake/currencies" passHref>
             {" "}
             <div
@@ -71,6 +74,7 @@ export default function StakingHeader() {
               Currencies
             </div>
           </Link>
+          */}
           <Link href="/dashboard/stake/mystakings" passHref>
             {" "}
             <div

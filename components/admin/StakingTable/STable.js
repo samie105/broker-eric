@@ -44,13 +44,27 @@ export default function Ttable({
   setData,
   email,
   name,
-
   setLastPaid,
 }) {
   const currentDate = new Date();
   const thirtyDaysAgo = new Date(currentDate);
   thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
   console.log(thirtyDaysAgo);
+  
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [newStake, setNewStake] = useState({
+    id: "",
+    name: "",
+    coinName: "", 
+    coinSymbol: "",
+    description: "",
+    percentageRage: "",
+    cryptoMinimum: 0.001,
+    cycle: "Monthly",
+    durations: [
+      { months: 1, percentage: 5 }
+    ]
+  });
 
   const columns = [
     {
@@ -109,14 +123,8 @@ export default function Ttable({
       header: "Monthly Returns",
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("monthlyReturns"));
-
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-
-        return <div className="lowercase">{formatted}</div>;
+        const symbol = row.original.stakedAssetSymbol;
+        return <div className="lowercase">{amount.toFixed(6)} {symbol}</div>;
       },
     },
     {
@@ -124,14 +132,8 @@ export default function Ttable({
       header: "Total Returns",
       cell: ({ row }) => {
         const amount = parseFloat(row.getValue("totalReturns"));
-
-        // Format the amount as a dollar amount
-        const formatted = new Intl.NumberFormat("en-US", {
-          style: "currency",
-          currency: "USD",
-        }).format(amount);
-
-        return <div className="lowercase">{formatted}</div>;
+        const symbol = row.original.stakedAssetSymbol;
+        return <div className="lowercase">{amount.toFixed(6)} {symbol}</div>;
       },
     },
 
@@ -146,15 +148,14 @@ export default function Ttable({
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
-        const payment = row.original;
+        const stake = row.original;
         const isPaid = new Date(row.original.lastPaid) >= thirtyDaysAgo;
-        console.log(isPaid);
-
+        const isPending = row.original.status.toLowerCase() === "pending";
+        
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" className="h-8 w-8 p-0">
-                {/* <span className="sr-only">Open menu</span> */}
                 <MoreHorizontal className="h-4 w-4" />
               </Button>
             </DropdownMenuTrigger>
@@ -162,24 +163,78 @@ export default function Ttable({
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
+              {/* Show payment proof if available */}
+              {stake.paymentProofUrl && (
+                <DropdownMenuItem
+                  className="font-bold py-2"
+                  onClick={() => window.open(stake.paymentProofUrl, "_blank")}
+                >
+                  View Payment Proof
+                </DropdownMenuItem>
+              )}
+              
+              {/* Approve pending stake */}
+              {isPending && (
+                <DropdownMenuItem
+                  className="font-bold py-2 text-green-600"
+                  onClick={() => {
+                    const proceed = confirm(
+                      "Approve this staking request?"
+                    );
+                    if (proceed)
+                      updateTransactionStatus(
+                        stake.id,
+                        "active",
+                        0,
+                        stake.stakedAsset,
+                        true
+                      );
+                  }}
+                >
+                  Approve Staking
+                </DropdownMenuItem>
+              )}
+              
+              {/* Reject pending stake */}
+              {isPending && (
+                <DropdownMenuItem
+                  className="font-bold py-2 text-red-600"
+                  onClick={() => {
+                    const proceed = confirm(
+                      "Reject this staking request?"
+                    );
+                    if (proceed)
+                      updateTransactionStatus(
+                        stake.id,
+                        "rejected",
+                        0,
+                        stake.stakedAsset
+                      );
+                  }}
+                >
+                  Reject Staking
+                </DropdownMenuItem>
+              )}
+
+              {/* Complete stake if duration is finished */}
               {Math.floor(
                 row.original.stakedDuration -
                   (new Date() - row.original.dateStaked) /
                     (30 * 24 * 60 * 60 * 1000)
               ) < 0 &&
-                row.original.status.toLowerCase() !== "completed" && (
+                row.original.status.toLowerCase() === "active" && (
                   <DropdownMenuItem
-                    className="bg-re-50 fnt-bold  py-2"
+                    className="bg-re-50 fnt-bold py-2"
                     onClick={() => {
                       const proceed = confirm(
-                        "Proceed with this action? or cancel"
+                        "Complete this stake and pay returns?"
                       );
                       if (proceed)
                         updateTransactionStatus(
-                          payment.id,
-                          "Completed",
-                          parseFloat(payment.monthlyReturns),
-                          payment.stakedAsset
+                          stake.id,
+                          "completed",
+                          parseFloat(stake.monthlyReturns),
+                          stake.stakedAsset
                         );
                     }}
                   >
@@ -187,25 +242,26 @@ export default function Ttable({
                   </DropdownMenuItem>
                 )}
 
+              {/* Pay monthly returns for active stake */}
               {Math.floor(
                 row.original.stakedDuration -
                   (new Date() - row.original.dateStaked) /
                     (30 * 24 * 60 * 60 * 1000)
               ) >= 0 &&
                 !isPaid &&
-                row.original.status.toLowerCase() === "ongoing" && (
+                row.original.status.toLowerCase() === "active" && (
                   <DropdownMenuItem
-                    className="bg-re-50 fot-bold  py-2"
+                    className="bg-re-50 fot-bold py-2"
                     onClick={() => {
                       const proceed = confirm(
-                        "Proceed with this action? or cancel"
+                        "Pay monthly returns for this stake?"
                       );
                       if (proceed)
                         updateTransactionStatus(
-                          payment.id,
-                          "Ongoing",
-                          parseFloat(payment.monthlyReturns),
-                          payment.stakedAsset
+                          stake.id,
+                          "active",
+                          parseFloat(stake.monthlyReturns),
+                          stake.stakedAsset
                         );
                     }}
                   >
@@ -218,7 +274,8 @@ export default function Ttable({
       },
     },
   ];
-  const updateTransactionStatus = async (stakeId, newStatus, amount, asset) => {
+
+  const updateTransactionStatus = async (stakeId, newStatus, amount, asset, isApproval = false) => {
     try {
       // Make a POST request to your backend API to update the transaction status
       const response = await fetch(`/db/adminStake/`, {
@@ -233,6 +290,7 @@ export default function Ttable({
           amount,
           asset,
           name,
+          isApproval: isApproval,
         }),
       });
 
@@ -241,13 +299,16 @@ export default function Ttable({
         const updatedData = data.map((stake) => {
           if (stake.id === stakeId) {
             // Update the transaction status
-            toast.success("Changes Applied & email sent");
+            let statusMessage = newStatus === "active" ? "activated" : 
+                                newStatus === "completed" ? "completed" :
+                                newStatus === "rejected" ? "rejected" : "updated";
+            toast.success(`Stake ${statusMessage} & notification sent`);
 
             return { ...stake, status: newStatus };
           }
           return stake;
         });
-
+        
         // Update the state with the new data
         setLastPaid(Date.now());
         setData(updatedData);
@@ -259,6 +320,7 @@ export default function Ttable({
       console.error("Error while updating transaction status:", error);
     }
   };
+
   const [sorting, setSorting] = useState([]);
   const [columnFilters, setColumnFilters] = useState([]);
   const [columnVisibility, setColumnVisibility] = useState({});
@@ -282,6 +344,77 @@ export default function Ttable({
       rowSelection,
     },
   });
+
+  // Add this function to create new staking option
+  const handleCreateStake = async () => {
+    // Validate form
+    if (!newStake.coinName || !newStake.coinSymbol || !newStake.durations.length) {
+      toast.error("Please fill all required fields");
+      return;
+    }
+
+    try {
+      const response = await fetch("/api/admin/stakes/create", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newStake),
+      });
+
+      if (response.ok) {
+        toast.success("New staking option created successfully");
+        setShowCreateModal(false);
+        // Reset form
+        setNewStake({
+          id: "",
+          name: "",
+          coinName: "",
+          coinSymbol: "",
+          description: "",
+          percentageRage: "",
+          cryptoMinimum: 0.001,
+          cycle: "Monthly",
+          durations: [
+            { months: 1, percentage: 5 }
+          ]
+        });
+      } else {
+        toast.error("Failed to create staking option");
+      }
+    } catch (error) {
+      console.error("Error creating staking option:", error);
+      toast.error("Failed to create staking option");
+    }
+  };
+  
+  // Add this to add duration to new stake
+  const addDuration = () => {
+    setNewStake({
+      ...newStake,
+      durations: [...newStake.durations, { months: 1, percentage: 5 }]
+    });
+  };
+  
+  // Add this to remove duration from new stake
+  const removeDuration = (index) => {
+    const newDurations = [...newStake.durations];
+    newDurations.splice(index, 1);
+    setNewStake({
+      ...newStake,
+      durations: newDurations
+    });
+  };
+  
+  // Add this to update duration values
+  const updateDuration = (index, field, value) => {
+    const newDurations = [...newStake.durations];
+    newDurations[index][field] = field === "months" ? parseInt(value) : parseFloat(value);
+    setNewStake({
+      ...newStake,
+      durations: newDurations
+    });
+  };
 
   return (
     <div className="w-full">

@@ -299,7 +299,7 @@ export default function OngoingInvestments() {
               <CardHeader className="pb-2">
                 <div className="flex justify-between items-start">
                   <CardTitle className="text-lg font-bold">
-                    ${investment.totalAmount ? investment.totalAmount.toLocaleString() : investment.amount.toLocaleString()} - {investment.duration}
+                    ${investment.totalAmount ? investment.totalAmount.toLocaleString() : (investment.amount ? investment.amount.toLocaleString() : '0')} - {investment.duration}
                   </CardTitle>
                   <Badge className={`${getStatusColor(investment.status)} text-white`}>
                     {investment.status.charAt(0).toUpperCase() + investment.status.slice(1)}
@@ -318,8 +318,8 @@ export default function OngoingInvestments() {
                       <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Your contribution:</span>
                       <span className="font-medium">
                         ${investment.partnerEmail === email 
-                          ? investment.partnerAmount?.toLocaleString() 
-                          : investment.initiatorAmount?.toLocaleString()} 
+                          ? (investment.partnerAmount ? investment.partnerAmount.toLocaleString() : '0')
+                          : (investment.initiatorAmount ? investment.initiatorAmount.toLocaleString() : '0')} 
                         ({investment.partnerEmail === email 
                           ? investment.partnerPercentage 
                           : investment.initiatorPercentage}%)
@@ -331,9 +331,9 @@ export default function OngoingInvestments() {
                     <span className="font-medium">
                       ${investment.type === "joint" 
                         ? ((investment.partnerEmail === email 
-                            ? investment.partnerAmount 
-                            : investment.initiatorAmount) * (1 + (investment.roi || 0))).toLocaleString() 
-                        : (investment.amount * (1 + (investment.roi || 0))).toLocaleString()}
+                            ? (investment.partnerAmount || 0) 
+                            : (investment.initiatorAmount || 0)) * (1 + (investment.roi || 0))).toLocaleString() 
+                        : ((investment.amount || 0) * (1 + (investment.roi || 0))).toLocaleString()}
                     </span>
                   </div>
                   <div className="flex justify-between text-sm">
@@ -393,8 +393,8 @@ export default function OngoingInvestments() {
                   <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Amount:</span>
                   <span className="font-medium">
                     ${selectedInvestment.type === "joint" 
-                      ? selectedInvestment.totalAmount.toLocaleString() 
-                      : selectedInvestment.amount.toLocaleString()}
+                      ? (selectedInvestment.totalAmount ? selectedInvestment.totalAmount.toLocaleString() : '0')
+                      : (selectedInvestment.amount ? selectedInvestment.amount.toLocaleString() : '0')}
                   </span>
                 </div>
                 <div className="flex justify-between">
@@ -418,7 +418,7 @@ export default function OngoingInvestments() {
                 <div className="flex justify-between">
                   <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Expected Return:</span>
                   <span className="font-medium text-green-500">
-                    ${selectedInvestment.expectedReturn.toLocaleString()}
+                    ${selectedInvestment.expectedReturn ? selectedInvestment.expectedReturn.toLocaleString() : '0'}
                   </span>
                 </div>
                 
@@ -429,8 +429,8 @@ export default function OngoingInvestments() {
                       <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Your Contribution:</span>
                       <span className="font-medium">
                         ${isPartner(selectedInvestment) 
-                          ? selectedInvestment.partnerAmount.toLocaleString() 
-                          : selectedInvestment.initiatorAmount.toLocaleString()} 
+                          ? (selectedInvestment.partnerAmount ? selectedInvestment.partnerAmount.toLocaleString() : '0')
+                          : (selectedInvestment.initiatorAmount ? selectedInvestment.initiatorAmount.toLocaleString() : '0')} 
                         ({isPartner(selectedInvestment) 
                           ? selectedInvestment.partnerPercentage 
                           : selectedInvestment.initiatorPercentage}%)
@@ -448,8 +448,8 @@ export default function OngoingInvestments() {
                       <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Partner&apos;s Contribution:</span>
                       <span className="font-medium">
                         ${isPartner(selectedInvestment) 
-                          ? selectedInvestment.initiatorAmount.toLocaleString() 
-                          : selectedInvestment.partnerAmount.toLocaleString()} 
+                          ? (selectedInvestment.initiatorAmount ? selectedInvestment.initiatorAmount.toLocaleString() : '0')
+                          : (selectedInvestment.partnerAmount ? selectedInvestment.partnerAmount.toLocaleString() : '0')} 
                         ({isPartner(selectedInvestment) 
                           ? selectedInvestment.initiatorPercentage 
                           : selectedInvestment.partnerPercentage}%)

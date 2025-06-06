@@ -6,7 +6,7 @@ export const stakingOptions = [
     coinSymbol: "BTC",
     description: "Stake your Bitcoin and earn rewards.",
     percentageRage: "5% - 12%",
-    minimum: 100, // Minimum staking amount in BTC
+    cryptoMinimum: 0.01, // Minimum staking amount in BTC
     cycle: "Monthly", // Staking cycle (e.g., Daily, Monthly)
     durations: [
       { months: 1, percentage: 5 },
@@ -24,9 +24,8 @@ export const stakingOptions = [
     coinName: "Ethereum",
     coinSymbol: "ETH",
     percentageRage: "4% - 10%",
-
     description: "Stake your Ethereum and earn rewards.",
-    minimum: 100, // Minimum staking amount in ETH
+    cryptoMinimum: 0.1, // Minimum staking amount in ETH
     cycle: "Monthly",
     durations: [
       { months: 1, percentage: 4 },
@@ -43,9 +42,8 @@ export const stakingOptions = [
     coinName: "Solana",
     coinSymbol: "SOL",
     percentageRage: "4% - 9%",
-
-    description: "Stake your Cardano SOL and earn rewards.",
-    minimum: 100, // Minimum staking amount in ADA
+    description: "Stake your Solana SOL and earn rewards.",
+    cryptoMinimum: 2, // Minimum staking amount in SOL
     cycle: "Monthly",
     durations: [
       { months: 1, percentage: 4 },
@@ -62,9 +60,8 @@ export const stakingOptions = [
     coinName: "Dogecoin",
     coinSymbol: "DOGE",
     percentageRage: "4% - 9%",
-
-    description: "Stake your Cardano DOGE and earn rewards.",
-    minimum: 100, // Minimum staking amount in ADA
+    description: "Stake your Dogecoin DOGE and earn rewards.",
+    cryptoMinimum: 1000, // Minimum staking amount in DOGE
     cycle: "Monthly",
     durations: [
       { months: 1, percentage: 4 },
@@ -81,9 +78,8 @@ export const stakingOptions = [
     coinName: "Cardano",
     coinSymbol: "ADA",
     percentageRage: "2% - 9%",
-
     description: "Stake your Cardano ADA and earn rewards.",
-    minimum: 100, // Minimum staking amount in ADA
+    cryptoMinimum: 200, // Minimum staking amount in ADA
     cycle: "Monthly",
     durations: [
       { months: 1, percentage: 2.5 },
@@ -101,9 +97,8 @@ export const stakingOptions = [
     coinName: "Tether",
     coinSymbol: "USDT",
     percentageRage: "2% - 9%",
-
     description: "Stake your USDT and earn rewards.",
-    minimum: 100, // Minimum staking amount in ADA
+    cryptoMinimum: 200, // Minimum staking amount in USDT
     cycle: "Monthly",
     durations: [
       { months: 1, percentage: 2.5 },
@@ -121,9 +116,8 @@ export const stakingOptions = [
     coinName: "Tron",
     coinSymbol: "TRX",
     percentageRage: "2% - 9%",
-
     description: "Stake your TRX and earn rewards.",
-    minimum: 100, // Minimum staking amount in ADA
+    cryptoMinimum: 2000, // Minimum staking amount in TRX
     cycle: "Monthly",
     durations: [
       { months: 1, percentage: 2.5 },

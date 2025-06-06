@@ -20,6 +20,23 @@ export default function Mystakings() {
   // const [loading, isloading] = useState(false);
   const { isDarkMode } = useTheme();
 
+  // Function to calculate remaining months more accurately
+  const calculateRemainingMonths = (stakingDate, durationMonths) => {
+    const stakeDate = new Date(stakingDate);
+    // Calculate end date by adding the duration in months
+    const endDate = new Date(stakeDate);
+    endDate.setMonth(endDate.getMonth() + durationMonths);
+    
+    // If current date is past end date, staking is completed
+    if (currentDate > endDate) {
+      return "Completed";
+    }
+    
+    // Calculate months between current date and end date
+    const monthsDiff = (endDate - currentDate) / millisecondsInAMonth;
+    return Math.ceil(monthsDiff);
+  };
+
   return (
     <div className={` mt-3 pb-2 ${isDarkMode ? "text-white" : ""}`}>
       <div className="rounded-sm overflow-hidden relative">
@@ -132,7 +149,7 @@ export default function Mystakings() {
                         </div>
                       </TableCell>
                       <TableCell className={`font-bold text-sm text-center`}>
-                        ${stake.stakedAmount}
+                        {parseFloat(stake.stakedAmount).toFixed(6)} {stake.stakedAssetSymbol}
                       </TableCell>
                       <TableCell className={`font-bold text-sm text-center`}>
                         {stake.stakedDuration} month(s)
@@ -141,29 +158,30 @@ export default function Mystakings() {
                             stake.stakedDuration -
                               (currentDate - new Date(stake.dateStaked)) /
                                 millisecondsInAMonth
-                          ) < 0 ? (
+                          ) <= 0 ? (
                             "Completed"
                           ) : (
                             <div className="whitespace-nowrap">
-                              {Math.floor(
+                              {Math.max(1, Math.floor(
                                 stake.stakedDuration -
-                                  (currentDate - stake.dateStaked) /
+                                  (currentDate - new Date(stake.dateStaked)) /
                                     millisecondsInAMonth
-                              )}{" "}
+                              ))}{" "}
                               month(s) left
                             </div>
                           )}
                         </div>
                       </TableCell>
                       <TableCell className={`font-bold text-sm text-center`}>
-                        ${stake.monthlyReturns}
+                        {parseFloat(stake.monthlyReturns).toFixed(6)} {stake.stakedAssetSymbol}
                       </TableCell>
                       <TableCell className={`font-bold text-sm text-center`}>
-                        ${stake.totalReturns}
+                        {parseFloat(stake.totalReturns).toFixed(6)} {stake.stakedAssetSymbol}
                       </TableCell>
                       <TableCell className={`font-bold text-center`}>
                         {(stake.status === "ongoing" ||
-                          stake.status === "Ongoing") && (
+                          stake.status === "Ongoing" ||
+                          stake.status === "active") && (
                           <div className="flex item-center font-bold text-orange-500 gap-x-1">
                             <div className="icon animate-spin">
                               <svg
@@ -180,7 +198,29 @@ export default function Mystakings() {
                               </svg>
                             </div>
                             <div className="text capitalize text-sm">
-                              {stake.status}
+                              {stake.status === "active" ? "Active" : stake.status}
+                            </div>
+                          </div>
+                        )}
+                        
+                        {stake.status === "pending" && (
+                          <div className="flex item-center font-bold text-yellow-500 gap-x-1">
+                            <div className="icon">
+                              <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                viewBox="0 0 20 20"
+                                fill="currentColor"
+                                className="w-5 h-5 text-yellow-500"
+                              >
+                                <path
+                                  fillRule="evenodd"
+                                  d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5.5a.75.75 0 001.5 0V5z"
+                                  clipRule="evenodd"
+                                />
+                              </svg>
+                            </div>
+                            <div className="text capitalize text-sm">
+                              Pending
                             </div>
                           </div>
                         )}

@@ -3,82 +3,123 @@ import axios from "axios";
 import React, { useEffect, useState } from "react";
 import { InfinitySpin } from "react-loader-spinner";
 import STable from "../../../components/admin/StakingTable/STable";
+import { Input } from "../../../components/ui/input";
 
-export default function StakingTable({ em }) {
-  const email = em.replace("%40", "@");
-  const [data, setData] = useState();
-  const [name, setName] = useState();
-  const [lastPaid, setLastPaid] = useState();
-  const [paidStake, setPaidStake] = useState();
+export default function StakingTable() {
+  const [users, setUsers] = useState([]);
+  const [email, setEmail] = useState("");
+  const [data, setData] = useState([]);
+  const [name, setName] = useState("");
+  const [loading, setLoading] = useState(true);
+  const [lastPaid, setLastPaid] = useState(Date.now());
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const getAlluserInvestments = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get(`/db/getUser/api`);
+      setUsers(response.data.users);
+    } catch (error) {
+      console.log(error);
+    }
+    setLoading(false);
+  };
 
   useEffect(() => {
-    const fetchedDetails = async () => {
-      try {
-        const response = await axios.post("/fetching/fetchAllDetails", {
-          email,
-        });
+    getAlluserInvestments();
+  }, [lastPaid]);
 
-        if (response.status === 200) {
-          // Data fetched successfully, you can now handle the data
-          const data = response.data;
-          //  console.log(data.withdrawalHistory);
-          setData(data.stakings);
-          setPaidStake(data.paidStaking);
-          setLastPaid(data.lastButtonClick);
-          setName(data.name);
-          // Do something with the data here, e.g., update state or perform other actions
-        } else {
-          // Handle other status codes or errors here
-          console.error("Failed to fetch data");
-        }
-      } catch (error) {
-        // Handle network errors or exceptions here
-        console.error("Error while fetching data:", error);
-      }
-    };
+  // Filter users based on search query
+  const filteredUsers = users.filter(user => {
+    if (!searchQuery) return user.stakings && user.stakings.length > 0;
+    
+    return (
+      (user.stakings && user.stakings.length > 0) && 
+      (user.name?.toLowerCase().includes(searchQuery.toLowerCase()) || 
+      user.email?.toLowerCase().includes(searchQuery.toLowerCase()))
+    );
+  });
 
-    // Call the function to fetch data when the component mounts
-    fetchedDetails();
-  }, [email]);
-  return (
-    <div className="px-4 pt-12">
-      <div className="settings px-3 py-4 rounded-md shadow-md shadow-gray-100">
-        <div className="profile font-bold">User Stakes settings</div>
-        <div className="email flex items-center gap-x-1 bg-gray-50 p-2 rounded-md mt-2">
-          <div className="icon">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              className="w-4 h-4 text-red-700/80"
-            >
-              <path
-                fillRule="evenodd"
-                d="M5.404 14.596A6.5 6.5 0 1116.5 10a1.25 1.25 0 01-2.5 0 4 4 0 10-.571 2.06A2.75 2.75 0 0018 10a8 8 0 10-2.343 5.657.75.75 0 00-1.06-1.06 6.5 6.5 0 01-9.193 0zM10 7.5a2.5 2.5 0 100 5 2.5 2.5 0 000-5z"
-                clipRule="evenodd"
-              />
-            </svg>
-          </div>
-          <div className="email_title text-sm font-bold">{email}</div>
-        </div>
+  if (loading) {
+    return (
+      <div className="min-h-[400px] w-full flex items-center justify-center">
+        <InfinitySpin
+          visible={true}
+          width="200"
+          color="#0052FF"
+          ariaLabel="infinity-spin-loading"
+        />
       </div>
+    );
+  }
 
-      {!data && (
-        <div className="w-full h-96 justify-center items-center flex">
-          <InfinitySpin color="red" width="100" />
+  return (
+    <div className="mt-20 px-2">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-2xl font-bold">Stakings</h2>
+        <button 
+          onClick={() => window.location.href = '/admin/stakes/create'}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+          </svg>
+          Create New Staking Option
+        </button>
+      </div>
+      
+      {/* Search input */}
+      <div className="mb-4">
+        <Input
+          type="text"
+          placeholder="Search by user name or email..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          className="w-full border-gray-300 mb-2"
+        />
+      </div>
+      
+      {/* User staking selection */}
+      <select
+        onChange={(e) => {
+          if (e.target.value !== "") {
+            const selectedData = users.find(
+              (user) => user.email === e.target.value
+            );
+            setEmail(e.target.value);
+            setName(selectedData.name);
+            setData(selectedData.stakings || []);
+          }
+        }}
+        className="py-2 px-4 border rounded-sm w-full"
+      >
+        <option value="">Select a user</option>
+        {filteredUsers.map((user, i) => (
+          <option key={i} value={user.email}>
+            {user.name} ({user.email})
+          </option>
+        ))}
+      </select>
+      
+      {filteredUsers.length === 0 && searchQuery && (
+        <div className="py-4 text-center text-gray-500">
+          No users found matching your search.
         </div>
       )}
-
-      {data && (
+      
+      {data.length > 0 && (
         <STable
           data={data}
           setData={setData}
           email={email}
           name={name}
-          lastPaid={lastPaid}
-          paidStake={paidStake}
           setLastPaid={setLastPaid}
         />
+      )}
+      {data.length === 0 && email && (
+        <div className="py-16 text-center">
+          <p className="text-lg">No stakings found for this user.</p>
+        </div>
       )}
     </div>
   );
