@@ -45,7 +45,7 @@ export default function EditAddress() {
     <div className="mt-8 px-4">
       <div className="mb-4 p-4 rounded-md">
         {Object.entries(data)
-          .filter(([key]) => key !== "_id" && key !== "__v")
+          .filter(([key]) => key !== "_id" && key !== "__v" && key !== "id" && !key.startsWith("$"))
           .map(([key, value]) => (
             <div key={key} className="mb-2">
               <label className="block font-bold">{key}</label>

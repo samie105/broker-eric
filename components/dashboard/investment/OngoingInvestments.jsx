@@ -8,6 +8,23 @@ import { formatDistanceToNow } from "date-fns";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "../../ui/tabs";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle } from "../../ui/dialog";
 import { Button } from "../../ui/button";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "../../ui/table";
+import { 
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "../../ui/dropdown-menu";
+import { MoreHorizontal, ExternalLink, AlertCircle } from "lucide-react";
 import axios from "axios";
 import toast from "react-hot-toast";
 
@@ -26,38 +43,24 @@ export default function OngoingInvestments() {
     if (activeTab === "joint") return investment.type === "joint";
     if (activeTab === "pending") return investment.status === "pending";
     if (activeTab === "active") return investment.status === "active";
+    if (activeTab === "completed") return investment.status === "completed";
     return true;
   }) || [];
 
   // Format date for display
   const formatDate = (dateString) => {
     try {
-      // If the date is invalid or undefined, return a placeholder
       if (!dateString) return "Not specified";
-      
-      // Log incoming dateString for debugging
-      console.log("Formatting date:", dateString);
-      
-      // Make sure we're working with a proper date
       const date = new Date(dateString);
-      
-      // Check if the date is valid
       if (isNaN(date.getTime())) {
-        console.warn("Invalid date detected:", dateString);
         return "Invalid date";
       }
-      
-      // For debugging
-      const formattedDate = date.toLocaleDateString("en-US", {
+      return date.toLocaleDateString("en-US", {
         year: "numeric",
         month: "long",
         day: "numeric"
       });
-      
-      console.log(`Formatted ${dateString} to ${formattedDate}`);
-      return formattedDate;
     } catch (error) {
-      console.error("Date formatting error:", error, "for date:", dateString);
       return "Invalid date";
     }
   };
@@ -66,22 +69,12 @@ export default function OngoingInvestments() {
   const getTimeRemaining = (endDateString) => {
     try {
       if (!endDateString) return "Unknown";
-      
       const endDate = new Date(endDateString);
-      
-      // Check if date is valid
       if (isNaN(endDate.getTime())) {
-        console.warn("Invalid end date for time remaining:", endDateString);
         return "Unknown";
       }
-      
-      // For debugging
-      const timeRemaining = formatDistanceToNow(endDate, { addSuffix: true });
-      console.log(`Time remaining for ${endDateString}: ${timeRemaining}`);
-      
-      return timeRemaining;
+      return formatDistanceToNow(endDate, { addSuffix: true });
     } catch (error) {
-      console.error("Error calculating time remaining:", error, "for date:", endDateString);
       return "Unknown";
     }
   };
@@ -171,19 +164,38 @@ export default function OngoingInvestments() {
     }
   };
 
-  // Get status badge color
-  const getStatusColor = (status) => {
+  // Get status badge color and class
+  const getStatusDisplay = (status) => {
+    if (!status) return { text: "Unknown", class: "bg-gray-500" };
+    
+    status = status.toLowerCase();
+    
     switch (status) {
       case "active":
-        return "bg-green-500";
+        return { 
+          text: "Active", 
+          class: isDarkMode ? "bg-green-900/40 text-green-300" : "bg-green-100 text-green-800" 
+        };
       case "pending":
-        return "bg-yellow-500";
+        return { 
+          text: "Pending", 
+          class: isDarkMode ? "bg-yellow-900/40 text-yellow-300" : "bg-yellow-100 text-yellow-800" 
+        };
       case "completed":
-        return "bg-blue-500";
+        return { 
+          text: "Completed", 
+          class: isDarkMode ? "bg-blue-900/40 text-blue-300" : "bg-blue-100 text-blue-800" 
+        };
       case "rejected":
-        return "bg-red-500";
+        return { 
+          text: "Rejected", 
+          class: isDarkMode ? "bg-red-900/40 text-red-300" : "bg-red-100 text-red-800" 
+        };
       default:
-        return "bg-gray-500";
+        return { 
+          text: status.charAt(0).toUpperCase() + status.slice(1), 
+          class: isDarkMode ? "bg-gray-900/40 text-gray-300" : "bg-gray-100 text-gray-800" 
+        };
     }
   };
 
@@ -197,6 +209,22 @@ export default function OngoingInvestments() {
     return investment.status === "pending" && isPartner(investment);
   };
 
+  // Get count of different investment types
+  const getCounts = () => {
+    if (!details.investments) return { all: 0, sole: 0, joint: 0, pending: 0, active: 0, completed: 0 };
+    
+    return {
+      all: details.investments.length,
+      sole: details.investments.filter(inv => inv.type === "sole").length,
+      joint: details.investments.filter(inv => inv.type === "joint").length,
+      pending: details.investments.filter(inv => inv.status === "pending").length,
+      active: details.investments.filter(inv => inv.status === "active").length,
+      completed: details.investments.filter(inv => inv.status === "completed").length
+    };
+  };
+  
+  const counts = getCounts();
+
   return (
     <div>
       <div className="mb-6">
@@ -207,7 +235,7 @@ export default function OngoingInvestments() {
           className="w-full"
         >
           <TabsList 
-            className={`grid w-full grid-cols-5 mb-6 ${
+            className={`grid w-full grid-cols-6 mb-6 ${
               isDarkMode 
                 ? "bg-[#222] text-white/80" 
                 : "bg-gray-100"
@@ -223,7 +251,7 @@ export default function OngoingInvestments() {
                     : ""
               }`}
             >
-              All
+              All ({counts.all})
             </TabsTrigger>
             <TabsTrigger 
               value="sole"
@@ -235,7 +263,7 @@ export default function OngoingInvestments() {
                     : ""
               }`}
             >
-              Sole
+              Sole ({counts.sole})
             </TabsTrigger>
             <TabsTrigger 
               value="joint"
@@ -247,19 +275,7 @@ export default function OngoingInvestments() {
                     : ""
               }`}
             >
-              Joint
-            </TabsTrigger>
-            <TabsTrigger 
-              value="active"
-              className={`${
-                activeTab === "active" && isDarkMode 
-                  ? "bg-[#111] text-white" 
-                  : activeTab === "active" 
-                    ? "bg-white" 
-                    : ""
-              }`}
-            >
-              Active
+              Joint ({counts.joint})
             </TabsTrigger>
             <TabsTrigger 
               value="pending"
@@ -271,206 +287,320 @@ export default function OngoingInvestments() {
                     : ""
               }`}
             >
-              Pending
+              Pending ({counts.pending})
+            </TabsTrigger>
+            <TabsTrigger 
+              value="active"
+              className={`${
+                activeTab === "active" && isDarkMode 
+                  ? "bg-[#111] text-white" 
+                  : activeTab === "active" 
+                    ? "bg-white" 
+                    : ""
+              }`}
+            >
+              Active ({counts.active})
+            </TabsTrigger>
+            <TabsTrigger 
+              value="completed"
+              className={`${
+                activeTab === "completed" && isDarkMode 
+                  ? "bg-[#111] text-white" 
+                  : activeTab === "completed" 
+                    ? "bg-white" 
+                    : ""
+              }`}
+            >
+              Completed ({counts.completed})
             </TabsTrigger>
           </TabsList>
+          
+          <TabsContent value={activeTab} className="mt-0">
+            <Card className={`${isDarkMode ? "bg-[#111] border-[#333]" : ""}`}>
+              <CardContent className="p-0">
+                {filteredInvestments.length === 0 ? (
+                  <div className="py-8 text-center">
+                    <p className={`text-lg ${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                      No investments found in this category
+                    </p>
+                  </div>
+                ) : (
+                  <div className="overflow-x-auto">
+                    <Table>
+                      <TableHeader className={isDarkMode ? "bg-[#222]" : "bg-gray-50"}>
+                        <TableRow>
+                          <TableHead>Investment</TableHead>
+                          <TableHead>Type</TableHead>
+                          <TableHead>Amount</TableHead>
+                          <TableHead>Duration</TableHead>
+                          <TableHead>Return</TableHead>
+                          <TableHead>Status</TableHead>
+                          <TableHead>Date</TableHead>
+                          <TableHead className="text-right">Actions</TableHead>
+                        </TableRow>
+                      </TableHeader>
+                      <TableBody>
+                        {filteredInvestments.map((investment) => {
+                          const status = getStatusDisplay(investment.status);
+                          const needsAction = requiresAction(investment);
+                          
+                          return (
+                            <TableRow key={investment.id} className={isDarkMode ? "border-[#333] hover:bg-[#1a1a1a]" : "hover:bg-gray-50"}>
+                              <TableCell>
+                                <div className="font-medium">
+                                  {investment.planName || "Custom Investment"}
+                                </div>
+                                {needsAction && (
+                                  <div className="flex items-center text-xs text-amber-500 mt-1">
+                                    <AlertCircle className="h-3 w-3 mr-1" />
+                                    Action required
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {investment.type === "joint" ? (
+                                  <Badge variant="outline" className="bg-purple-100 text-purple-800 border-purple-200 dark:bg-purple-900/30 dark:text-purple-300 dark:border-purple-800/50">
+                                    Joint {isPartner(investment) ? "(Partner)" : "(Initiator)"}
+                                  </Badge>
+                                ) : (
+                                  <Badge variant="outline" className="bg-blue-100 text-blue-800 border-blue-200 dark:bg-blue-900/30 dark:text-blue-300 dark:border-blue-800/50">
+                                    Sole
+                                  </Badge>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                <div className="font-medium">
+                                  {investment.currency === "USD" ? "$" : ""}
+                                  {typeof investment.amount === 'number' && !isNaN(investment.amount) 
+                                    ? parseFloat(investment.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                    : "0.00"}
+                                </div>
+                                {investment.type === "joint" && (
+                                  <div className="text-xs text-muted-foreground">
+                                    Your share: 
+                                    {isPartner(investment) 
+                                      ? (typeof investment.partnerAmount === 'number' && !isNaN(investment.partnerAmount)
+                                          ? parseFloat(investment.partnerAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                          : "0.00") 
+                                      : (typeof investment.initiatorAmount === 'number' && !isNaN(investment.initiatorAmount)
+                                          ? parseFloat(investment.initiatorAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                          : "0.00")}
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell>
+                                {investment.duration} {investment.duration === 1 ? "month" : "months"}
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm">
+                                  {investment.currency === "USD" ? "$" : ""}
+                                  {typeof investment.monthlyReturn === 'number' && !isNaN(investment.monthlyReturn)
+                                    ? parseFloat(investment.monthlyReturn).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                    : "0.00"} / month
+                                </div>
+                                <div className="text-xs text-muted-foreground">
+                                  Total: {investment.currency === "USD" ? "$" : ""}
+                                  {typeof investment.totalReturn === 'number' && !isNaN(investment.totalReturn)
+                                    ? parseFloat(investment.totalReturn).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                                    : "0.00"}
+                                </div>
+                              </TableCell>
+                              <TableCell>
+                                <Badge className={status.class}>
+                                  {status.text}
+                                </Badge>
+                              </TableCell>
+                              <TableCell>
+                                <div className="text-sm">{formatDate(investment.dateCreated)}</div>
+                                {investment.endDate && (
+                                  <div className="text-xs text-muted-foreground">
+                                    Ends: {formatDate(investment.endDate)}
+                                  </div>
+                                )}
+                              </TableCell>
+                              <TableCell className="text-right">
+                                <DropdownMenu>
+                                  <DropdownMenuTrigger asChild>
+                                    <Button variant="ghost" className="h-8 w-8 p-0">
+                                      <span className="sr-only">Open menu</span>
+                                      <MoreHorizontal className="h-4 w-4" />
+                                    </Button>
+                                  </DropdownMenuTrigger>
+                                  <DropdownMenuContent align="end" className={isDarkMode ? "bg-[#222] border-[#333] text-white" : ""}>
+                                    <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                                    <DropdownMenuSeparator />
+                                    <DropdownMenuItem onClick={() => handleViewInvestment(investment)}>
+                                      View Details
+                                    </DropdownMenuItem>
+                                    {needsAction && (
+                                      <>
+                                        <DropdownMenuSeparator />
+                                        <DropdownMenuItem 
+                                          onClick={() => handleInvestmentResponse(investment.id, "accept")}
+                                          disabled={isLoading}
+                                          className="text-green-600 dark:text-green-400"
+                                        >
+                                          Accept Investment
+                                        </DropdownMenuItem>
+                                        <DropdownMenuItem 
+                                          onClick={() => handleInvestmentResponse(investment.id, "decline")}
+                                          disabled={isLoading}
+                                          className="text-red-600 dark:text-red-400"
+                                        >
+                                          Decline Investment
+                                        </DropdownMenuItem>
+                                      </>
+                                    )}
+                                  </DropdownMenuContent>
+                                </DropdownMenu>
+                              </TableCell>
+                            </TableRow>
+                          );
+                        })}
+                      </TableBody>
+                    </Table>
+                  </div>
+                )}
+              </CardContent>
+            </Card>
+          </TabsContent>
         </Tabs>
       </div>
-
-      {filteredInvestments.length === 0 ? (
-        <div className={`text-center py-12 ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
-          <div className="text-4xl mb-4">💼</div>
-          <h3 className="text-lg font-medium mb-2">No investments found</h3>
-          <p className="text-sm">
-            {activeTab === "all" 
-              ? "You don't have any investments yet. Start investing to see them here."
-              : `No ${activeTab} investments found.`}
-          </p>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {filteredInvestments.map((investment) => (
-            <Card 
-              key={investment.id} 
-              className={`${
-                isDarkMode ? "bg-[#111] text-white border-[#222]" : "bg-white"
-              } hover:shadow-md transition-all`}
-            >
-              <CardHeader className="pb-2">
-                <div className="flex justify-between items-start">
-                  <CardTitle className="text-lg font-bold">
-                    ${investment.totalAmount ? investment.totalAmount.toLocaleString() : (investment.amount ? investment.amount.toLocaleString() : '0')} - {investment.duration}
-                  </CardTitle>
-                  <Badge className={`${getStatusColor(investment.status)} text-white`}>
-                    {investment.status.charAt(0).toUpperCase() + investment.status.slice(1)}
-                  </Badge>
-                </div>
-                <CardDescription className={isDarkMode ? "text-white/60" : ""}>
-                  {investment.type === "joint" 
-                    ? `Joint with ${investment.partnerEmail === email ? investment.initiatorEmail : investment.partnerEmail}` 
-                    : "Sole Investment"}
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="pb-2">
-                <div className="space-y-2">
-                  {investment.type === "joint" && (
-                    <div className="flex justify-between text-sm">
-                      <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Your contribution:</span>
-                      <span className="font-medium">
-                        ${investment.partnerEmail === email 
-                          ? (investment.partnerAmount ? investment.partnerAmount.toLocaleString() : '0')
-                          : (investment.initiatorAmount ? investment.initiatorAmount.toLocaleString() : '0')} 
-                        ({investment.partnerEmail === email 
-                          ? investment.partnerPercentage 
-                          : investment.initiatorPercentage}%)
-                      </span>
-                    </div>
-                  )}
-                  <div className="flex justify-between text-sm">
-                    <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Expected return:</span>
-                    <span className="font-medium">
-                      ${investment.type === "joint" 
-                        ? ((investment.partnerEmail === email 
-                            ? (investment.partnerAmount || 0) 
-                            : (investment.initiatorAmount || 0)) * (1 + (investment.roi || 0))).toLocaleString() 
-                        : ((investment.amount || 0) * (1 + (investment.roi || 0))).toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between text-sm">
-                    <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>End date:</span>
-                    <span>{formatDate(investment.endDate)}</span>
-                  </div>
-                  {investment.status === "active" && (
-                    <div className="flex justify-between text-sm">
-                      <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Time remaining:</span>
-                      <span>{getTimeRemaining(investment.endDate)}</span>
-                    </div>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter>
-                {requiresAction(investment) ? (
-                  <Button 
-                    onClick={() => window.location.href = "/dashboard/investment?tab=requests"} 
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    View in Requests
-                  </Button>
-                ) : (
-                  <Button 
-                    onClick={() => handleViewInvestment(investment)} 
-                    variant="outline" 
-                    className="w-full"
-                  >
-                    View Details
-                  </Button>
-                )}
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
-      )}
-
+      
       {/* Investment Details Dialog */}
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent className={isDarkMode ? "bg-[#111] text-white border-[#333]" : ""}>
+        <DialogContent className={`sm:max-w-md ${isDarkMode ? "bg-[#111] text-white border-[#333]" : ""}`}>
           <DialogHeader>
             <DialogTitle>Investment Details</DialogTitle>
-            <DialogDescription className={isDarkMode ? "text-white/60" : ""}>
-              View details about your investment
+            <DialogDescription className={isDarkMode ? "text-gray-400" : ""}>
+              {selectedInvestment?.type === "joint"
+                ? `Joint investment with ${isPartner(selectedInvestment) ? selectedInvestment.initiatorName : selectedInvestment.partnerName}`
+                : "Solo investment"}
             </DialogDescription>
           </DialogHeader>
           
           {selectedInvestment && (
-            <div className="space-y-4">
-              <div className="space-y-2">
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Type:</span>
-                  <span className="font-medium">{selectedInvestment.type.charAt(0).toUpperCase() + selectedInvestment.type.slice(1)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Amount:</span>
-                  <span className="font-medium">
-                    ${selectedInvestment.type === "joint" 
-                      ? (selectedInvestment.totalAmount ? selectedInvestment.totalAmount.toLocaleString() : '0')
-                      : (selectedInvestment.amount ? selectedInvestment.amount.toLocaleString() : '0')}
-                  </span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Duration:</span>
-                  <span className="font-medium">{selectedInvestment.duration}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Status:</span>
-                  <Badge className={`${getStatusColor(selectedInvestment.status)} text-white`}>
-                    {selectedInvestment.status.charAt(0).toUpperCase() + selectedInvestment.status.slice(1)}
-                  </Badge>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Start Date:</span>
-                  <span className="font-medium">{formatDate(selectedInvestment.startDate)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>End Date:</span>
-                  <span className="font-medium">{formatDate(selectedInvestment.endDate)}</span>
-                </div>
-                <div className="flex justify-between">
-                  <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Expected Return:</span>
-                  <span className="font-medium text-green-500">
-                    ${selectedInvestment.expectedReturn ? selectedInvestment.expectedReturn.toLocaleString() : '0'}
-                  </span>
+            <div className="py-4">
+              <div className="space-y-3">
+                <div className="grid grid-cols-2 gap-y-2">
+                  <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Investment Plan:</p>
+                  <p className="text-right font-medium">
+                    {selectedInvestment.planName || "Custom Investment"}
+                  </p>
+                  
+                  <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Status:</p>
+                  <p className="text-right">
+                    <Badge className={getStatusDisplay(selectedInvestment.status).class}>
+                      {getStatusDisplay(selectedInvestment.status).text}
+                    </Badge>
+                  </p>
+                  
+                  {selectedInvestment.type === "joint" && (
+                    <>
+                      <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>
+                        {isPartner(selectedInvestment) ? "Initiator" : "Partner"}:
+                      </p>
+                      <p className="text-right font-medium">
+                        {isPartner(selectedInvestment) ? selectedInvestment.initiatorName : selectedInvestment.partnerName}
+                      </p>
+                    </>
+                  )}
+                  
+                  <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Total Amount:</p>
+                  <p className="text-right font-medium">
+                    {selectedInvestment.currency === "USD" ? "$" : ""}
+                    {typeof selectedInvestment.amount === 'number' && !isNaN(selectedInvestment.amount)
+                      ? parseFloat(selectedInvestment.amount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      : "0.00"}
+                  </p>
+                  
+                  {selectedInvestment.type === "joint" && (
+                    <>
+                      <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Your Contribution:</p>
+                      <p className="text-right font-medium">
+                        {selectedInvestment.currency === "USD" ? "$" : ""}
+                        {isPartner(selectedInvestment) 
+                          ? (typeof selectedInvestment.partnerAmount === 'number' && !isNaN(selectedInvestment.partnerAmount)
+                              ? parseFloat(selectedInvestment.partnerAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                              : "0.00")
+                          : (typeof selectedInvestment.initiatorAmount === 'number' && !isNaN(selectedInvestment.initiatorAmount)
+                              ? parseFloat(selectedInvestment.initiatorAmount).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                              : "0.00")}
+                        <span className="text-sm ml-1 opacity-70">
+                          ({isPartner(selectedInvestment) 
+                            ? selectedInvestment.partnerPercentage 
+                            : selectedInvestment.initiatorPercentage}%)
+                        </span>
+                      </p>
+                    </>
+                  )}
+                  
+                  <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Duration:</p>
+                  <p className="text-right font-medium">
+                    {selectedInvestment.duration} {selectedInvestment.duration === 1 ? "month" : "months"}
+                  </p>
+                  
+                  <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Monthly Returns:</p>
+                  <p className="text-right font-medium">
+                    {selectedInvestment.currency === "USD" ? "$" : ""}
+                    {typeof selectedInvestment.monthlyReturn === 'number' && !isNaN(selectedInvestment.monthlyReturn)
+                      ? parseFloat(selectedInvestment.monthlyReturn).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      : "0.00"}
+                  </p>
+                  
+                  <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Total Returns:</p>
+                  <p className="text-right font-medium">
+                    {selectedInvestment.currency === "USD" ? "$" : ""}
+                    {typeof selectedInvestment.totalReturn === 'number' && !isNaN(selectedInvestment.totalReturn)
+                      ? parseFloat(selectedInvestment.totalReturn).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
+                      : "0.00"}
+                  </p>
+                  
+                  <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>Start Date:</p>
+                  <p className="text-right font-medium">{formatDate(selectedInvestment.dateCreated)}</p>
+                  
+                  {selectedInvestment.endDate && (
+                    <>
+                      <p className={`${isDarkMode ? "text-gray-400" : "text-gray-500"}`}>End Date:</p>
+                      <p className="text-right font-medium">{formatDate(selectedInvestment.endDate)}</p>
+                    </>
+                  )}
                 </div>
                 
-                {selectedInvestment.type === "joint" && (
-                  <>
-                    <div className="h-px bg-gray-200 dark:bg-gray-700 my-3"></div>
-                    <div className="flex justify-between">
-                      <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Your Contribution:</span>
-                      <span className="font-medium">
-                        ${isPartner(selectedInvestment) 
-                          ? (selectedInvestment.partnerAmount ? selectedInvestment.partnerAmount.toLocaleString() : '0')
-                          : (selectedInvestment.initiatorAmount ? selectedInvestment.initiatorAmount.toLocaleString() : '0')} 
-                        ({isPartner(selectedInvestment) 
-                          ? selectedInvestment.partnerPercentage 
-                          : selectedInvestment.initiatorPercentage}%)
-                      </span>
+                {requiresAction(selectedInvestment) && (
+                  <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-700">
+                    <h4 className="font-medium mb-2">Action Required</h4>
+                    <p className="text-sm mb-4">
+                      You have been invited to join this investment. Do you want to accept or decline?
+                    </p>
+                    <div className="flex gap-x-2 justify-end">
+                      <Button 
+                        variant="outline" 
+                        onClick={() => handleInvestmentResponse(selectedInvestment.id, "decline")}
+                        disabled={isLoading}
+                        className="border-red-200 text-red-600 hover:bg-red-50 dark:border-red-900 dark:text-red-400 dark:hover:bg-red-950/30"
+                      >
+                        Decline
+                      </Button>
+                      <Button 
+                        onClick={() => handleInvestmentResponse(selectedInvestment.id, "accept")}
+                        disabled={isLoading}
+                        className="bg-green-600 hover:bg-green-700 dark:bg-green-700 dark:hover:bg-green-800"
+                      >
+                        Accept
+                      </Button>
                     </div>
-                    <div className="flex justify-between">
-                      <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Partner:</span>
-                      <span className="font-medium">
-                        {isPartner(selectedInvestment) 
-                          ? selectedInvestment.initiatorEmail 
-                          : selectedInvestment.partnerEmail}
-                      </span>
-                    </div>
-                    <div className="flex justify-between">
-                      <span className={isDarkMode ? "text-white/60" : "text-gray-500"}>Partner&apos;s Contribution:</span>
-                      <span className="font-medium">
-                        ${isPartner(selectedInvestment) 
-                          ? (selectedInvestment.initiatorAmount ? selectedInvestment.initiatorAmount.toLocaleString() : '0')
-                          : (selectedInvestment.partnerAmount ? selectedInvestment.partnerAmount.toLocaleString() : '0')} 
-                        ({isPartner(selectedInvestment) 
-                          ? selectedInvestment.initiatorPercentage 
-                          : selectedInvestment.partnerPercentage}%)
-                      </span>
-                    </div>
-                  </>
+                  </div>
                 )}
               </div>
-              
-              {requiresAction(selectedInvestment) && (
-                <div className="pt-4">
-                  <Button 
-                    onClick={() => window.location.href = "/dashboard/investment?tab=requests"} 
-                    className="w-full"
-                  >
-                    View in Requests
-                  </Button>
-                </div>
-              )}
             </div>
           )}
+          
+          <DialogFooter>
+            <Button onClick={() => setIsDialogOpen(false)}>
+              Close
+            </Button>
+          </DialogFooter>
         </DialogContent>
       </Dialog>
     </div>

@@ -13,7 +13,7 @@ import {
   getSortedRowModel,
   useReactTable,
 } from "@tanstack/react-table";
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react";
+import { ArrowUpDown, ChevronDown, MoreHorizontal, ExternalLink } from "lucide-react";
 
 import { Button } from "../../../components/ui/button";
 import { Checkbox } from "../../../components/ui/checkbox";
@@ -45,6 +45,7 @@ export default function Ttable({
   email,
   name,
   setLastPaid,
+  showUserInfo = false,
 }) {
   const currentDate = new Date();
   const thirtyDaysAgo = new Date(currentDate);
@@ -83,7 +84,23 @@ export default function Ttable({
       header: "Asset ",
       cell: ({ row }) => <div>{row.getValue("stakedAsset")}</div>,
     },
-
+    {
+      accessorKey: "isJoint",
+      header: "Type",
+      cell: ({ row }) => (
+        <div>
+          {row.original.isJoint ? (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+              Joint
+            </span>
+          ) : (
+            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+              Sole
+            </span>
+          )}
+        </div>
+      ),
+    },
     {
       accessorKey: "stakedAmount",
       header: ({ column }) => {
@@ -97,6 +114,25 @@ export default function Ttable({
             <ArrowUpDown className="ml-2 h-4 w-4" />
           </Button>
         );
+      },
+      cell: ({ row }) => {
+        const amount = parseFloat(row.getValue("stakedAmount"));
+        const symbol = row.original.stakedAssetSymbol;
+        
+        if (row.original.isJoint) {
+          return (
+            <div>
+              <div className="font-medium">{amount.toFixed(6)} {symbol}</div>
+              <div className="text-xs text-gray-500">
+                Initiator: {(amount * (row.original.initiatorPercentage / 100)).toFixed(6)} {symbol} ({row.original.initiatorPercentage}%)
+                <br />
+                Partner: {(amount * (row.original.partnerPercentage / 100)).toFixed(6)} {symbol} ({row.original.partnerPercentage}%)
+              </div>
+            </div>
+          );
+        }
+        
+        return <div>{amount.toFixed(6)} {symbol}</div>;
       },
     },
     {
@@ -136,7 +172,30 @@ export default function Ttable({
         return <div className="lowercase">{amount.toFixed(6)} {symbol}</div>;
       },
     },
-
+    {
+      id: "partnerInfo",
+      header: "Partner Info",
+      cell: ({ row }) => {
+        if (!row.original.isJoint) return <div className="text-gray-400">N/A</div>;
+        
+        return (
+          <div className="text-sm">
+            <div>{row.original.partnerEmail}</div>
+            {row.original.partnerStatus && (
+              <div className={`mt-1 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+                row.original.partnerStatus === "pending" 
+                  ? "bg-yellow-100 text-yellow-800" 
+                  : row.original.partnerStatus === "accepted" 
+                  ? "bg-green-100 text-green-800"
+                  : "bg-red-100 text-red-800"
+              }`}>
+                {row.original.partnerStatus.charAt(0).toUpperCase() + row.original.partnerStatus.slice(1)}
+              </div>
+            )}
+          </div>
+        );
+      },
+    },
     {
       accessorKey: "status",
       header: "Status",
@@ -145,13 +204,82 @@ export default function Ttable({
       ),
     },
     {
+      id: "payment",
+      header: "Payment",
+      cell: ({ row }) => {
+        const stake = row.original;
+        
+        if (stake.isJoint) {
+          return (
+            <div className="text-sm">
+              <div className="font-medium">Initiator Payment</div>
+              <div className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-1 ${
+                stake.initiatorPaymentStatus === "completed" 
+                  ? "bg-green-100 text-green-800" 
+                  : "bg-yellow-100 text-yellow-800"
+              }`}>
+                {stake.initiatorPaymentStatus ? stake.initiatorPaymentStatus.charAt(0).toUpperCase() + stake.initiatorPaymentStatus.slice(1) : "Pending"}
+              </div>
+              
+              <div className="font-medium mt-2">Partner Payment</div>
+              <div className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium mt-1 ${
+                stake.partnerDepositStatus === "completed" 
+                  ? "bg-green-100 text-green-800" 
+                  : stake.partnerStatus !== "accepted"
+                  ? "bg-gray-100 text-gray-800"
+                  : "bg-yellow-100 text-yellow-800"
+              }`}>
+                {stake.partnerStatus !== "accepted" 
+                  ? "Awaiting Acceptance" 
+                  : stake.partnerDepositStatus 
+                    ? stake.partnerDepositStatus.charAt(0).toUpperCase() + stake.partnerDepositStatus.slice(1) 
+                    : "Pending"}
+              </div>
+              
+              {stake.partnerPaymentProof && (
+                <button 
+                  onClick={() => window.open(stake.partnerPaymentProof, "_blank")}
+                  className="text-xs text-blue-600 underline mt-1 flex items-center"
+                >
+                  View Proof <ExternalLink className="ml-1 h-3 w-3" />
+                </button>
+              )}
+            </div>
+          );
+        }
+        
+        return (
+          <div className="text-sm">
+            <div className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium ${
+              stake.paymentStatus === "completed" 
+                ? "bg-green-100 text-green-800" 
+                : "bg-yellow-100 text-yellow-800"
+            }`}>
+              {stake.paymentStatus ? stake.paymentStatus.charAt(0).toUpperCase() + stake.paymentStatus.slice(1) : "Pending"}
+            </div>
+            
+            {stake.paymentProofUrl && (
+              <button 
+                onClick={() => window.open(stake.paymentProofUrl, "_blank")}
+                className="text-xs text-blue-600 underline mt-1 flex items-center"
+              >
+                View Proof <ExternalLink className="ml-1 h-3 w-3" />
+              </button>
+            )}
+          </div>
+        );
+      },
+    },
+    {
       id: "actions",
       enableHiding: false,
       cell: ({ row }) => {
         const stake = row.original;
         const isPaid = new Date(row.original.lastPaid) >= thirtyDaysAgo;
-        const isPending = row.original.status.toLowerCase() === "pending";
-        
+        const isPending = row.original.status.toLowerCase() === "pending" || row.original.status.toLowerCase() === "awaiting_verification";
+        const isJoint = stake.isJoint;
+        const partnerStatus = stake.partnerStatus;
+
         return (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
@@ -163,7 +291,6 @@ export default function Ttable({
               <DropdownMenuLabel>Actions</DropdownMenuLabel>
               <DropdownMenuSeparator />
 
-              {/* Show payment proof if available */}
               {stake.paymentProofUrl && (
                 <DropdownMenuItem
                   className="font-bold py-2"
@@ -173,101 +300,90 @@ export default function Ttable({
                 </DropdownMenuItem>
               )}
               
-              {/* Approve pending stake */}
-              {isPending && (
+              {stake.partnerPaymentProof && (
+                <DropdownMenuItem
+                  className="font-bold py-2"
+                  onClick={() => window.open(stake.partnerPaymentProof, "_blank")}
+                >
+                  View Partner Payment Proof
+                </DropdownMenuItem>
+              )}
+              
+              {isJoint && partnerStatus === "pending" && isPending && (
+                <DropdownMenuItem
+                  className="font-bold py-2 text-yellow-600 cursor-default"
+                >
+                  Awaiting Partner Acceptance
+                </DropdownMenuItem>
+              )}
+              
+              {isPending && (!isJoint || (isJoint && partnerStatus === "accepted")) && (
                 <DropdownMenuItem
                   className="font-bold py-2 text-green-600"
                   onClick={() => {
                     const proceed = confirm(
-                      "Approve this staking request?"
+                      "Verify this transaction request?"
                     );
                     if (proceed)
-                      updateTransactionStatus(
-                        stake.id,
-                        "active",
-                        0,
-                        stake.stakedAsset,
-                        true
-                      );
+                      updateTransactionStatus(stake.id, "active", stake.stakedAmount, stake.stakedAsset, true, stake.isJoint, stake.partnerEmail);
                   }}
                 >
-                  Approve Staking
+                  Verify Transaction
                 </DropdownMenuItem>
               )}
               
-              {/* Reject pending stake */}
               {isPending && (
                 <DropdownMenuItem
                   className="font-bold py-2 text-red-600"
                   onClick={() => {
                     const proceed = confirm(
-                      "Reject this staking request?"
+                      "Reject this transaction request?"
                     );
                     if (proceed)
-                      updateTransactionStatus(
-                        stake.id,
-                        "rejected",
-                        0,
-                        stake.stakedAsset
-                      );
+                      updateTransactionStatus(stake.id, "rejected", stake.stakedAmount, stake.stakedAsset, false, stake.isJoint, stake.partnerEmail);
                   }}
                 >
-                  Reject Staking
+                  Reject Transaction
                 </DropdownMenuItem>
               )}
 
-              {/* Complete stake if duration is finished */}
-              {Math.floor(
-                row.original.stakedDuration -
-                  (new Date() - row.original.dateStaked) /
-                    (30 * 24 * 60 * 60 * 1000)
-              ) < 0 &&
-                row.original.status.toLowerCase() === "active" && (
-                  <DropdownMenuItem
-                    className="bg-re-50 fnt-bold py-2"
-                    onClick={() => {
-                      const proceed = confirm(
-                        "Complete this stake and pay returns?"
-                      );
-                      if (proceed)
-                        updateTransactionStatus(
-                          stake.id,
-                          "completed",
-                          parseFloat(stake.monthlyReturns),
-                          stake.stakedAsset
-                        );
-                    }}
-                  >
-                    Set to Completed & Pay total
-                  </DropdownMenuItem>
-                )}
-
-              {/* Pay monthly returns for active stake */}
-              {Math.floor(
-                row.original.stakedDuration -
-                  (new Date() - row.original.dateStaked) /
-                    (30 * 24 * 60 * 60 * 1000)
-              ) >= 0 &&
-                !isPaid &&
-                row.original.status.toLowerCase() === "active" && (
-                  <DropdownMenuItem
-                    className="bg-re-50 fot-bold py-2"
-                    onClick={() => {
-                      const proceed = confirm(
-                        "Pay monthly returns for this stake?"
-                      );
-                      if (proceed)
-                        updateTransactionStatus(
-                          stake.id,
-                          "active",
-                          parseFloat(stake.monthlyReturns),
-                          stake.stakedAsset
-                        );
-                    }}
-                  >
-                    Pay monthly returns
-                  </DropdownMenuItem>
-                )}
+              {!isPaid && !isPending && (
+                <DropdownMenuItem
+                  className="font-bold py-2 text-green-600"
+                  onClick={() => {
+                    const proceed = confirm(
+                      "Mark this transaction as paid for this month?"
+                    );
+                    if (proceed) {
+                      fetch("/db/payStaking", {
+                        method: "POST",
+                        headers: {
+                          "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                          email: email,
+                          id: stake.id,
+                        }),
+                      })
+                        .then((response) => response.json())
+                        .then((data) => {
+                          if (data.success) {
+                            toast.success("Payment marked successfully!");
+                            setLastPaid(Date.now());
+                          } else {
+                            toast.error("Failed to mark payment");
+                          }
+                        })
+                        .catch((error) => {
+                          console.error("Error:", error);
+                          toast.error("An error occurred while marking payment");
+                        });
+                    }
+                  }}
+                >
+                  Mark as Paid
+                </DropdownMenuItem>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         );
@@ -275,49 +391,110 @@ export default function Ttable({
     },
   ];
 
-  const updateTransactionStatus = async (stakeId, newStatus, amount, asset, isApproval = false) => {
+  const getColumns = () => {
+    let cols = [...columns];
+    
+    if (showUserInfo) {
+      cols.splice(2, 0, {
+        id: "userInfo",
+        header: "User",
+        cell: ({ row }) => (
+          <div className="text-sm">
+            <div className="font-medium">{row.original.userName || "Unknown"}</div>
+            <div className="text-xs text-gray-500">{row.original.userEmail}</div>
+          </div>
+        ),
+      });
+    }
+    
+    return cols;
+  };
+
+  const updateTransactionStatus = async (stakeId, newStatus, amount, asset, isApproval = false, isJoint, partnerEmail) => {
     try {
-      // Make a POST request to your backend API to update the transaction status
       const response = await fetch(`/db/adminStake/`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          email,
           stakeId,
           newStatus,
           amount,
-          asset,
+          email,
           name,
           isApproval: isApproval,
+          isJoint,
+          partnerEmail,
         }),
       });
 
       if (response.ok) {
-        // Transaction status updated successfully on the backend, update the frontend
         const updatedData = data.map((stake) => {
           if (stake.id === stakeId) {
-            // Update the transaction status
             let statusMessage = newStatus === "active" ? "activated" : 
                                 newStatus === "completed" ? "completed" :
-                                newStatus === "rejected" ? "rejected" : "updated";
-            toast.success(`Stake ${statusMessage} & notification sent`);
-
-            return { ...stake, status: newStatus };
+                                "rejected";
+                                
+            // Create appropriate notification messages
+            let notificationText = "";
+            
+            switch(newStatus) {
+              case "active":
+                notificationText = `Your staking request of ${stake.stakedAmount} ${stake.stakedAssetSymbol} has been approved.`;
+                break;
+              case "completed":
+                notificationText = `Your staking of ${stake.stakedAmount} ${stake.stakedAssetSymbol} has been completed with a total return of ${stake.totalReturns} ${stake.stakedAssetSymbol}.`;
+                break;
+              case "rejected":
+                notificationText = `Your staking request of ${stake.stakedAmount} ${stake.stakedAssetSymbol} has been rejected.`;
+                break;
+              default:
+                notificationText = `Your staking status has been updated to ${newStatus}.`;
+            }
+            
+            // For joint stakings, notify the partner as well
+            if (isJoint && partnerEmail) {
+              sendNotificationToPartner(partnerEmail, stake, newStatus, notificationText);
+            }
+            
+            // Log the status change
+            toast.success(`Staking ${statusMessage} successfully!`);
+            
+            // Return updated stake data
+            return { ...stake, status: newStatus, lastPaid: new Date() };
           }
           return stake;
         });
-        
-        // Update the state with the new data
+
         setLastPaid(Date.now());
         setData(updatedData);
       } else {
-        // Handle error cases when the backend update fails
         console.error("Failed to update transaction status on the backend");
+        toast.error("Failed to update staking status");
       }
     } catch (error) {
-      console.error("Error while updating transaction status:", error);
+      console.error("Error updating transaction status:", error);
+      toast.error("Error updating staking status");
+    }
+  };
+
+  // Helper function to send notification to partner in joint stakings
+  const sendNotificationToPartner = async (partnerEmail, stake, newStatus, notificationText) => {
+    try {
+      await fetch("/api/notifications/create", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          email: partnerEmail,
+          message: notificationText,
+          category: "staking",
+          status: newStatus === "active" ? "approved" : 
+                  newStatus === "completed" ? "completed" : "rejected"
+        }),
+      });
+    } catch (error) {
+      console.error("Error sending notification to partner:", error);
     }
   };
 
@@ -328,7 +505,7 @@ export default function Ttable({
 
   const table = useReactTable({
     data,
-    columns,
+    columns: getColumns(),
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     getCoreRowModel: getCoreRowModel(),
@@ -345,9 +522,7 @@ export default function Ttable({
     },
   });
 
-  // Add this function to create new staking option
   const handleCreateStake = async () => {
-    // Validate form
     if (!newStake.coinName || !newStake.coinSymbol || !newStake.durations.length) {
       toast.error("Please fill all required fields");
       return;
@@ -365,7 +540,6 @@ export default function Ttable({
       if (response.ok) {
         toast.success("New staking option created successfully");
         setShowCreateModal(false);
-        // Reset form
         setNewStake({
           id: "",
           name: "",
@@ -388,7 +562,6 @@ export default function Ttable({
     }
   };
   
-  // Add this to add duration to new stake
   const addDuration = () => {
     setNewStake({
       ...newStake,
@@ -396,7 +569,6 @@ export default function Ttable({
     });
   };
   
-  // Add this to remove duration from new stake
   const removeDuration = (index) => {
     const newDurations = [...newStake.durations];
     newDurations.splice(index, 1);
@@ -406,7 +578,6 @@ export default function Ttable({
     });
   };
   
-  // Add this to update duration values
   const updateDuration = (index, field, value) => {
     const newDurations = [...newStake.durations];
     newDurations[index][field] = field === "months" ? parseInt(value) : parseFloat(value);

@@ -20,6 +20,7 @@ import { usePathname } from "next/navigation";
 import BonusPlan from "../bonus_plan/BonusPlan";
 import Mystakings from "../stake/Mystakings";
 import MyTrades from "../MarketsPage/MyTrades/MyTrades";
+import DashboardInvestments from "../investment/DashboardInvestments";
 
 export default function Dash() {
   const { details } = useUserData();
@@ -459,6 +460,23 @@ export default function Dash() {
             <>
               <div className="text mt-3 mb-3 text-lg font-bold"> Stakings</div>
               <Mystakings />
+            </>
+          )}
+        </div>
+        <div className={`investments pt-6 ${isDarkMode ? "text-white" : ""}`}>
+          {details === 0 ? (
+            <div className="px-3 mt-4">
+              {" "}
+              <Skeleton
+                className={`  h-52 ${
+                  isDarkMode ? "bg-[#333]" : "bg-gray-200/80"
+                }`}
+              />
+            </div>
+          ) : (
+            <>
+              <div className="text mt-3 mb-3 text-lg font-bold"> Investments</div>
+              <DashboardInvestments />
             </>
           )}
         </div>

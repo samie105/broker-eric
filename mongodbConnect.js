@@ -133,6 +133,7 @@ const userSchema = new mongoose.Schema({
   planBonus: Number,
   watchedCrypto: [Object],
   stakings: [Object],
+  stakingInvitations: [Object],
   trades: [Object],
   tradingProgress: Number,
   paidStaking: { type: Date, default: Date.now, required: true },

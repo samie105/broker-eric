@@ -87,11 +87,21 @@ export default function Nav() {
   // ...
 
   const formatRelativeTime = (dateString) => {
-    // Parse the date string into a Date object
-    const date = new Date(dateString);
+    try {
+      // Parse the date string into a Date object
+      const date = new Date(dateString);
 
-    // Calculate the relative time to now
-    return formatDistanceToNow(date, { addSuffix: true });
+      // Check if date is valid
+      if (isNaN(date.getTime())) {
+        return 'Invalid date';
+      }
+
+      // Calculate the relative time to now
+      return formatDistanceToNow(date, { addSuffix: true });
+    } catch (error) {
+      console.error('Error formatting date:', error);
+      return 'Invalid date';
+    }
   };
 
   // Map over notifications and format the date as relative time for each

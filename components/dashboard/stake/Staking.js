@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useTheme } from "../../../contexts/themeContext";
 import { Input } from "../../ui/input";
 import Image from "next/image";
@@ -42,34 +42,8 @@ export default function Staking() {
 
   const { cryptoPrices } = useUserData();
   
-  useEffect(() => {
-    const fetchStakingOptions = async () => {
-      try {
-        const response = await fetch("/api/admin/staking-options");
-        if (response.ok) {
-          const data = await response.json();
-          setStakingOptions(data.options || []);
-          
-          // After getting staking options, fetch prices for all coins
-          if (data.options && data.options.length > 0) {
-            fetchAllCoinPrices(data.options);
-          }
-        } else {
-          toast.error("Failed to load staking options");
-        }
-      } catch (error) {
-        console.error("Error fetching staking options:", error);
-        toast.error("Failed to load staking options");
-      } finally {
-        setLoading(false);
-      }
-    };
-    
-    fetchStakingOptions();
-  }, []);
-  
   // Helper function to get the correct CoinGecko ID
-  const getCoinGeckoId = (coinSymbol, coinName) => {
+  const getCoinGeckoId = useCallback((coinSymbol, coinName) => {
     // Try the hardcoded map first for common cryptocurrencies
     if (COINGECKO_ID_MAP[coinSymbol]) {
       return [COINGECKO_ID_MAP[coinSymbol]];
@@ -84,9 +58,9 @@ export default function Staking() {
     ];
     
     return formats;
-  };
+  }, []);
   
-  const fetchAllCoinPrices = async (options) => {
+  const fetchAllCoinPrices = useCallback(async (options) => {
     setPricesLoading(true);
     const debug = {};
     
@@ -129,7 +103,33 @@ export default function Staking() {
     } finally {
       setPricesLoading(false);
     }
-  };
+  }, [getCoinGeckoId]);
+  
+  useEffect(() => {
+    const fetchStakingOptions = async () => {
+      try {
+        const response = await fetch("/api/admin/staking-options");
+        if (response.ok) {
+          const data = await response.json();
+          setStakingOptions(data.options || []);
+          
+          // After getting staking options, fetch prices for all coins
+          if (data.options && data.options.length > 0) {
+            fetchAllCoinPrices(data.options);
+          }
+        } else {
+          toast.error("Failed to load staking options");
+        }
+      } catch (error) {
+        console.error("Error fetching staking options:", error);
+        toast.error("Failed to load staking options");
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchStakingOptions();
+  }, [fetchAllCoinPrices]);
 
   const filteredStakingOptions = stakingOptions.filter((stake) =>
     stake.coinName.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -166,7 +166,7 @@ export default function Staking() {
     return null;
   };
   
-  const refreshPrices = async () => {
+  const refreshPrices = useCallback(async () => {
     setPricesLoading(true);
     try {
       if (stakingOptions.length > 0) {
@@ -179,7 +179,7 @@ export default function Staking() {
     } finally {
       setPricesLoading(false);
     }
-  };
+  }, [stakingOptions, fetchAllCoinPrices]);
   
   // For debugging
   const getPriceDebugInfo = (stake) => {
@@ -293,7 +293,7 @@ export default function Staking() {
                 </svg>
               </div>
               <h3 className="text-lg font-semibold text-gray-800 mb-2">No Results Found</h3>
-              <p className="text-gray-500 text-center max-w-md">We couldn't find any staking options matching your search. Try a different keyword or clear your search.</p>
+              <p className="text-gray-500 text-center max-w-md">We {"couldn't "}find any staking options matching your search. Try a different keyword or clear your search.</p>
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-2 mt-3">

@@ -1,10 +1,11 @@
+'use client';
 import React from "react";
-import Mystakings from "../../../../components/dashboard/stake/Mystakings";
+import StakingModule from "../../../../components/dashboard/stake/StakingModule";
 
-export default function page() {
+export default function StakingPage() {
   return (
     <div>
-      <Mystakings />
+      <StakingModule />
     </div>
   );
 }

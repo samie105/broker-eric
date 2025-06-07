@@ -64,8 +64,22 @@ export const lists = [
         <path d="M8.003 4.07C8.55 3.992 9 4.447 9 5v5a1 1 0 001 1h5c.552 0 1.008.45.93.997A7.001 7.001 0 012 11a7.002 7.002 0 016.003-6.93z" />
       </svg>
     ),
-
     linkPath: "/dashboard/stake",
+    submenus: [
+      {
+        nav: "Overview",
+        linkPath: "/dashboard/stake",
+      },
+      {
+        nav: "My Stakings",
+        linkPath: "/dashboard/stake/mystakings",
+      },
+      {
+        nav: "Staking Invitations",
+        linkPath: "/dashboard/stake/invitations",
+        new: true,
+      },
+    ],
   },
   {
     nav: "Deposit",

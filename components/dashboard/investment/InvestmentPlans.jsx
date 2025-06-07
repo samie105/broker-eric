@@ -272,68 +272,68 @@ export default function InvestmentPlans() {
           </div>
         </div>
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           {plans.map((plan) => (
-            <Card 
+          <Card 
               key={plan._id || plan.id} 
-              className={`${
-                isDarkMode ? "bg-[#111] text-white border-[#222]" : "bg-white"
-              } hover:shadow-md transition-all`}
-            >
-              <CardHeader>
-                <CardTitle 
-                  className="text-xl font-bold"
+            className={`${
+              isDarkMode ? "bg-[#111] text-white border-[#222]" : "bg-white"
+            } hover:shadow-md transition-all`}
+          >
+            <CardHeader>
+              <CardTitle 
+                className="text-xl font-bold"
+                style={{ color: plan.color }}
+              >
+                {plan.title}
+              </CardTitle>
+              <CardDescription className={isDarkMode ? "text-white/60" : ""}>
+                {plan.description}
+              </CardDescription>
+            </CardHeader>
+            <CardContent>
+              <div className="text-center mb-4">
+                <div 
+                  className="text-4xl font-bold mb-2"
                   style={{ color: plan.color }}
                 >
-                  {plan.title}
-                </CardTitle>
-                <CardDescription className={isDarkMode ? "text-white/60" : ""}>
-                  {plan.description}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="text-center mb-4">
-                  <div 
-                    className="text-4xl font-bold mb-2"
-                    style={{ color: plan.color }}
-                  >
-                    {plan.roi}%
-                  </div>
-                  <p className={`text-sm ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
-                    Expected ROI
-                  </p>
+                  {plan.roi}%
                 </div>
-                <div className={`p-3 rounded-md ${isDarkMode ? "bg-[#222]" : "bg-gray-50"} mb-4`}>
-                  <div className="flex justify-between items-center">
-                    <span className={`text-sm ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
-                      Min. Investment
-                    </span>
-                    <span className="font-bold">
-                      ${plan.minAmount.toLocaleString()}
-                    </span>
-                  </div>
-                  <div className="flex justify-between items-center mt-2">
-                    <span className={`text-sm ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
-                      On $10,000
-                    </span>
-                    <span className="font-bold">
-                      ${(10000 + (10000 * plan.roi / 100)).toLocaleString()}
-                    </span>
-                  </div>
+                <p className={`text-sm ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
+                  Expected ROI
+                </p>
+              </div>
+              <div className={`p-3 rounded-md ${isDarkMode ? "bg-[#222]" : "bg-gray-50"} mb-4`}>
+                <div className="flex justify-between items-center">
+                  <span className={`text-sm ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
+                    Min. Investment
+                  </span>
+                  <span className="font-bold">
+                    ${plan.minAmount.toLocaleString()}
+                  </span>
                 </div>
-              </CardContent>
-              <CardFooter>
-                <Button 
-                  className="w-full"
-                  style={{ backgroundColor: plan.color }}
-                  onClick={() => handleSelectPlan(plan)}
-                >
-                  Start Investment
-                </Button>
-              </CardFooter>
-            </Card>
-          ))}
-        </div>
+                <div className="flex justify-between items-center mt-2">
+                  <span className={`text-sm ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
+                    On $10,000
+                  </span>
+                  <span className="font-bold">
+                    ${(10000 + (10000 * plan.roi / 100)).toLocaleString()}
+                  </span>
+                </div>
+              </div>
+            </CardContent>
+            <CardFooter>
+              <Button 
+                className="w-full"
+                style={{ backgroundColor: plan.color }}
+                onClick={() => handleSelectPlan(plan)}
+              >
+                Start Investment
+              </Button>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
       )}
 
       {/* Investment Dialog */}
@@ -349,7 +349,7 @@ export default function InvestmentPlans() {
               {selectedPlan && `${selectedPlan.title} plan with ${selectedPlan.roi}% ROI`}
             </DialogDescription>
           </DialogHeader>
-          
+
           <div className="space-y-4 py-4">
             <div className="space-y-2">
               <Label htmlFor="amount">Investment Amount</Label>
@@ -366,7 +366,7 @@ export default function InvestmentPlans() {
                 {selectedPlan && `Minimum investment: $${selectedPlan.minAmount.toLocaleString()}`}
               </div>
             </div>
-            
+
             <div className="space-y-2">
               <Label>Investment Type</Label>
               <div className="flex space-x-4">
@@ -393,10 +393,10 @@ export default function InvestmentPlans() {
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
                         <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                       </svg>
-                    </div>
-                    <div className="flex-1 ml-2">
-                      <div className="font-medium">Sole Investment</div>
-                      <div className={`text-xs ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
+                  </div>
+                  <div className="flex-1 ml-2">
+                    <div className="font-medium">Sole Investment</div>
+                    <div className={`text-xs ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
                         Invest on your own and keep all returns
                       </div>
                     </div>
@@ -426,11 +426,11 @@ export default function InvestmentPlans() {
                       <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" className="w-3 h-3">
                         <path fillRule="evenodd" d="M16.704 4.153a.75.75 0 01.143 1.052l-8 10.5a.75.75 0 01-1.127.075l-4.5-4.5a.75.75 0 011.06-1.06l3.894 3.893 7.48-9.817a.75.75 0 011.05-.143z" clipRule="evenodd" />
                       </svg>
-                    </div>
-                    <div className="flex-1 ml-2">
-                      <div className="font-medium">Joint Investment</div>
-                      <div className={`text-xs ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
-                        Partner with another user and share the investment and returns
+                  </div>
+                  <div className="flex-1 ml-2">
+                    <div className="font-medium">Joint Investment</div>
+                    <div className={`text-xs ${isDarkMode ? "text-white/60" : "text-gray-500"}`}>
+                      Partner with another user and share the investment and returns
                       </div>
                     </div>
                   </div>
@@ -532,4 +532,4 @@ export default function InvestmentPlans() {
       </Dialog>
     </div>
   );
-}
+} 

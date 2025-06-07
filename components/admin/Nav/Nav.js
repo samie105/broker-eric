@@ -102,6 +102,15 @@ export default function Nav() {
                   />
                   
                   <NavItem 
+                    href="/admin/stakings" 
+                    icon={<TransactionIcon />} 
+                    bgColor="bg-orange-50/80" 
+                    textColor="text-orange-700"
+                    label="Transactions"
+                    isActive={pathname.includes("/admin/stakings")}
+                  />
+                  
+                  <NavItem 
                     href="/admin/investment-plans" 
                     icon={<MoneyIcon />} 
                     bgColor="bg-blue-50/80" 
@@ -161,19 +170,19 @@ function NavItem({ href, icon, bgColor, textColor, label, isActive }) {
 // Icons
 function DashboardIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-      fill="currentColor"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
       className="w-5 h-5"
-    >
-      <path d="M4 5h12v7H4V5z" />
-      <path
-        fillRule="evenodd"
-        d="M1 3.5A1.5 1.5 0 012.5 2h15A1.5 1.5 0 0119 3.5v10a1.5 1.5 0 01-1.5 1.5H12v1.5h3.25a.75.75 0 010 1.5H4.75a.75.75 0 010-1.5H8V15H2.5A1.5 1.5 0 011 13.5v-10zm16.5 0h-15v10h15v-10z"
-        clipRule="evenodd"
-      />
-    </svg>
+              >
+                <path d="M4 5h12v7H4V5z" />
+                <path
+                  fillRule="evenodd"
+                  d="M1 3.5A1.5 1.5 0 012.5 2h15A1.5 1.5 0 0119 3.5v10a1.5 1.5 0 01-1.5 1.5H12v1.5h3.25a.75.75 0 010 1.5H4.75a.75.75 0 010-1.5H8V15H2.5A1.5 1.5 0 011 13.5v-10zm16.5 0h-15v10h15v-10z"
+                  clipRule="evenodd"
+                />
+              </svg>
   );
 }
 
@@ -233,13 +242,26 @@ function ListIcon() {
 
 function EditIcon() {
   return (
-    <svg
-      xmlns="http://www.w3.org/2000/svg"
-      viewBox="0 0 20 20"
-      fill="currentColor"
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="0 0 20 20"
+                fill="currentColor"
+                className="w-5 h-5"
+              >
+                <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+              </svg>
+  );
+}
+
+function TransactionIcon() {
+  return (
+    <svg 
+      xmlns="http://www.w3.org/2000/svg" 
+      viewBox="0 0 20 20" 
+      fill="currentColor" 
       className="w-5 h-5"
     >
-      <path d="M2.695 14.763l-1.262 3.154a.5.5 0 00.65.65l3.155-1.262a4 4 0 001.343-.885L17.5 5.5a2.121 2.121 0 00-3-3L3.58 13.42a4 4 0 00-.885 1.343z" />
+      <path fillRule="evenodd" d="M1 4a1 1 0 011-1h16a1 1 0 011 1v8a1 1 0 01-1 1H2a1 1 0 01-1-1V4zm12 4a3 3 0 11-6 0 3 3 0 016 0zM4 9a1 1 0 100-2 1 1 0 000 2zm13-1a1 1 0 11-2 0 1 1 0 012 0zM1.75 14.5a.75.75 0 000 1.5c4.417 0 8.693.603 12.749 1.73 1.111.309 2.251-.512 2.251-1.696v-.784a.75.75 0 00-1.5 0v.784a.272.272 0 01-.35.25A49.043 49.043 0 001.75 14.5z" clipRule="evenodd" />
     </svg>
   );
 }

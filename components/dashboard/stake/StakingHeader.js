@@ -21,7 +21,6 @@ export default function StakingHeader() {
       <div className={`currency-tabs-container w-full font-bold`}>
         <div className={`flex items-center mt-4`}>
           <Link href="/dashboard/stake" passHref>
-            {" "}
             <div
               className={`py-2 px-3 e rounded-sm font-bold ${
                 isDarkMode && pathname === "/dashboard/stake"
@@ -37,46 +36,7 @@ export default function StakingHeader() {
               Crypto
             </div>
           </Link>
-          {/* Stock tab commented out - currently only using crypto
-          <Link href="/dashboard/stake/stock" passHref>
-            {" "}
-            <div
-              className={`py-2 px-3 ${
-                isDarkMode && pathname === "/dashboard/stake/stock"
-                  ? "bg-[#222] "
-                  : !isDarkMode && pathname === "/dashboard/stake/stock"
-                  ? "bg-black/5 "
-                  : ""
-              } rounded-sm mx-1 text-sm cursor-pointer ${
-                isDarkMode ? "hover:bg-[#333]" : "hover:bg-black/10"
-              } transition-all`}
-            >
-              {" "}
-              Stock
-            </div>
-          </Link>
-          */}
-          {/* Currencies tab commented out - currently only using crypto
-          <Link href="/dashboard/stake/currencies" passHref>
-            {" "}
-            <div
-              className={`py-2 px-3 rounded-sm mx-1 text-sm ${
-                isDarkMode && pathname === "/dashboard/stake/currencies"
-                  ? "bg-[#222] "
-                  : !isDarkMode && pathname === "/dashboard/stake/currencies"
-                  ? "bg-black/5 "
-                  : ""
-              }  cursor-pointer ${
-                isDarkMode ? "hover:bg-[#333]" : "hover:bg-black/10"
-              } transition-all`}
-            >
-              {" "}
-              Currencies
-            </div>
-          </Link>
-          */}
           <Link href="/dashboard/stake/mystakings" passHref>
-            {" "}
             <div
               className={`py-2 px-3 rounded-sm mx-1 text-sm ${
                 isDarkMode && pathname === "/dashboard/stake/mystakings"
@@ -90,6 +50,22 @@ export default function StakingHeader() {
             >
               {" "}
               My stakings
+            </div>
+          </Link>
+          <Link href="/dashboard/stake/requests" passHref>
+            <div
+              className={`py-2 px-3 rounded-sm mx-1 text-sm ${
+                isDarkMode && pathname === "/dashboard/stake/requests"
+                  ? "bg-[#222] "
+                  : !isDarkMode && pathname === "/dashboard/stake/requests"
+                  ? "bg-black/5 "
+                  : ""
+              }  cursor-pointer ${
+                isDarkMode ? "hover:bg-[#333]" : "hover:bg-black/10"
+              } transition-all`}
+            >
+              {" "}
+              Requests
             </div>
           </Link>
         </div>

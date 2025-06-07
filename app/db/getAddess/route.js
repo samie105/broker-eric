@@ -9,7 +9,12 @@ export async function POST(request) {
   const address = await AddressModel.findOne({ _id });
   console.log(address);
   if (address) {
-    return NextResponse.json(address);
+    // Convert to plain object and remove MongoDB specific fields
+    const addressObj = address.toObject();
+    delete addressObj._id;
+    delete addressObj.__v;
+    delete addressObj.id;
+    return NextResponse.json(addressObj);
   } else {
     return NextResponse.json({ error: "no user found" });
   }
