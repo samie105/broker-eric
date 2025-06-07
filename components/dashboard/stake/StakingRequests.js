@@ -135,7 +135,7 @@ export default function StakingRequests() {
       if (!response.ok) throw new Error("Failed to accept transaction");
 
       toast.success("Successfully accepted transaction request. Please complete your deposit for verification.");
-      
+
       // Update local state
       setDetails((prev) => ({
         ...prev,

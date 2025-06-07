@@ -298,8 +298,8 @@ export default function Mystakings() {
                                     <div>
                                       <div className="font-medium">{stake.stakedAssetSymbol}</div>
                                       <div className="text-xs text-muted-foreground">{stake.stakedAsset}</div>
-                                    </div>
-                                  </div>
+              </div>
+            </div>
                                 </TableCell>
                                 <TableCell>
                                   {stake.isJoint ? (
@@ -315,12 +315,12 @@ export default function Mystakings() {
                                 <TableCell>
                                   <div className="font-medium">
                                     {parseFloat(stake.stakedAmount).toFixed(6)} {stake.stakedAssetSymbol}
-                                  </div>
+              </div>
                                   {stake.isJoint && (
                                     <div className="text-xs text-muted-foreground">
                                       Your share: {stake.isPartner ? stake.partnerPercentage : stake.initiatorPercentage}%
-                                    </div>
-                                  )}
+            </div>
+          )}
                                 </TableCell>
                                 <TableCell>
                                   <div>{stake.stakedDuration} months</div>
@@ -371,12 +371,12 @@ export default function Mystakings() {
                         )}
                       </TableBody>
                     </Table>
-                  </div>
+              </div>
                 </CardContent>
               </Card>
             </TabsContent>
           </Tabs>
-        </div>
+            </div>
       )}
       
       {/* Staking Details Dialog */}
@@ -385,7 +385,7 @@ export default function Mystakings() {
           <DialogHeader>
             <DialogTitle>Transaction Details</DialogTitle>
             <DialogDescription className={isDarkMode ? "text-gray-400" : ""}>
-              {selectedStaking?.isJoint
+              {selectedStaking?.isJoint 
                 ? `Joint transaction with ${selectedStaking.isInitiator ? selectedStaking.partnerName : selectedStaking.initiatorName}`
                 : "Solo transaction"}
             </DialogDescription>

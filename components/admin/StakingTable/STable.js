@@ -348,12 +348,12 @@ export default function Ttable({
               )}
 
               {!isPaid && !isPending && (
-                <DropdownMenuItem
+                  <DropdownMenuItem
                   className="font-bold py-2 text-green-600"
-                  onClick={() => {
-                    const proceed = confirm(
+                    onClick={() => {
+                      const proceed = confirm(
                       "Mark this transaction as paid for this month?"
-                    );
+                      );
                     if (proceed) {
                       fetch("/db/payStaking", {
                         method: "POST",
@@ -379,11 +379,11 @@ export default function Ttable({
                           toast.error("An error occurred while marking payment");
                         });
                     }
-                  }}
-                >
+                    }}
+                  >
                   Mark as Paid
-                </DropdownMenuItem>
-              )}
+                  </DropdownMenuItem>
+                )}
             </DropdownMenuContent>
           </DropdownMenu>
         );

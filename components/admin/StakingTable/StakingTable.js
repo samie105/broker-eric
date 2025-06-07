@@ -128,17 +128,17 @@ export default function StakingTable({ filterStatus = "all" }) {
           >
             View All Transactions
           </button>
-          <button 
-            onClick={() => window.location.href = '/admin/stakes/create'}
-            className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center"
-          >
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-              </svg>
+        <button 
+          onClick={() => window.location.href = '/admin/stakes/create'}
+          className="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-md flex items-center"
+        >
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5 mr-2">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+            </svg>
             Create New Transaction Option
-          </button>
+        </button>
         </div>
-      </div>
+          </div>
       
       {/* Search input */}
       <div className="mb-4">
@@ -155,45 +155,45 @@ export default function StakingTable({ filterStatus = "all" }) {
 
       {viewMode === "users" ? (
         <>
-          {/* User staking selection */}
-          <select
-            onChange={(e) => {
-              if (e.target.value !== "") {
-                const selectedData = users.find(
-                  (user) => user.email === e.target.value
-                );
-                setEmail(e.target.value);
-                setName(selectedData.name);
+      {/* User staking selection */}
+      <select
+        onChange={(e) => {
+          if (e.target.value !== "") {
+            const selectedData = users.find(
+              (user) => user.email === e.target.value
+            );
+            setEmail(e.target.value);
+            setName(selectedData.name);
                 setData(filterStakingsByStatus(selectedData.stakings || []));
-              }
-            }}
-            className="py-2 px-4 border rounded-sm w-full"
-          >
-            <option value="">Select a user</option>
-            {filteredUsers.map((user, i) => (
-              <option key={i} value={user.email}>
+          }
+        }}
+        className="py-2 px-4 border rounded-sm w-full"
+      >
+        <option value="">Select a user</option>
+        {filteredUsers.map((user, i) => (
+          <option key={i} value={user.email}>
                 {user.name} ({user.email}) - {filterStakingsByStatus(user.stakings).length} transactions
-              </option>
-            ))}
-          </select>
-          
-          {filteredUsers.length === 0 && searchQuery && (
-            <div className="py-4 text-center text-gray-500">
-              No users found matching your search.
-            </div>
-          )}
+          </option>
+        ))}
+      </select>
+      
+      {filteredUsers.length === 0 && searchQuery && (
+        <div className="py-4 text-center text-gray-500">
+          No users found matching your search.
+        </div>
+      )}
 
-          {data.length > 0 && (
-            <STable
-              data={data}
-              setData={setData}
-              email={email}
-              name={name}
-              setLastPaid={setLastPaid}
-            />
-          )}
-          {data.length === 0 && email && (
-            <div className="py-16 text-center">
+      {data.length > 0 && (
+        <STable
+          data={data}
+          setData={setData}
+          email={email}
+          name={name}
+          setLastPaid={setLastPaid}
+        />
+      )}
+      {data.length === 0 && email && (
+        <div className="py-16 text-center">
               <p className="text-lg">No transactions found for this user.</p>
             </div>
           )}
@@ -244,7 +244,7 @@ export default function StakingTable({ filterStatus = "all" }) {
           ) : (
             <div className="py-16 text-center">
               <p className="text-lg">No transactions found matching your criteria.</p>
-            </div>
+        </div>
           )}
         </>
       )}
